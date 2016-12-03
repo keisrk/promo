@@ -25,49 +25,49 @@ object PromotionApp extends JSApp {
       WFM.rotateEdge3D(Data.test05a, 0d, 30d) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, 30d - i), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     } else if(60 <= i && i < 120) {
       WFM.rotateEdge3D(Data.test05a, 0d, 30d) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, 90d - i), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, i - 90d), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 150d + 2.5 * (i - 60d))) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 150d + 2.5 * (i - 60d))) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     } else if(120 <= i && i < 180) {
       WFM.rotateEdge3D(Data.test05a, 0d, 150d - i) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, i - 150d), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 0d + 2.5 * (i - 120d))) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 0d + 2.5 * (i - 120d))) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     } else if(180<= i && i < 240) {
       WFM.rotateEdge3D(Data.test05a, 0d, i - 210d) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     } else if(240<= i && i < 300){
       WFM.rotateEdge3D(Data.test05a, 0d, 30d) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     } else {
       WFM.rotateEdge3D(Data.test05a, 0d, 30d) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WFM.translateEdge3D(WFM.rotateEdge3D(Data.test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WFM.translateEdge3D(WFM.rotateEdge3D(WFM.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
+      WFM.translateEdge3D(WFM.rotateEdge3D(Data.data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
 
     }
   }

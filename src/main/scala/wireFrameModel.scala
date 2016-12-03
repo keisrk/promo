@@ -3,8 +3,19 @@ package promotion.wireframemodel
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 
 class Window(val r: Double, val x: Double, val y: Double)
-class Point2D(val x: Double, val y: Double)
-class Point3D(val x: Double, val y: Double, val z: Double)
+class Point2D(val x: Double, val y: Double){
+}
+class Point3D(val x: Double, val y: Double, val z: Double){
+  def xpls(i: Double): Point3D = {
+    new Point3D(x + i, y, z)
+  }
+  def ypls(i: Double): Point3D = {
+    new Point3D(x, y + i, z)
+  }
+  def zpls(i: Double): Point3D = {
+    new Point3D(x, y, z + i)
+  }
+}
 class Edge2D(val p2: List[Point2D])
 class Edge3D(val p3: List[Point3D])
 
@@ -14,6 +25,55 @@ class EdgeD3D(val org: Point3D, val dst: Point3D)
 abstract class Orient
 case class XY(r: Double) extends Orient
 case class YZ(r: Double) extends Orient
+
+class Rect(val o: Point3D, val w: Double, val h: Double, val d: Double) {
+  def toEdge3D(): List[Edge3D] = {
+    val x = new Point3D(o.x + w, o.y, o.z)
+    val y = new Point3D(o.x, o.y + h, o.z)
+    val z = new Point3D(o.x, o.y, o.z + d)
+    val xy = new Point3D(o.x + w, o.y + h, o.z)
+    val yz = new Point3D(o.x, o.y + h, o.z + d)
+    val zx = new Point3D(o.x + w, o.y, o.z + d)
+    val xyz = new Point3D(o.x + w, o.y + h, o.z + d)
+    List(new Edge3D(List(o, x, zx, xyz, yz, y, o, z, yz)), new Edge3D(List(z, zx)), new Edge3D(List(x, xy, xyz)), new Edge3D(List(y, xy)))
+  }
+  def toInt(x: Boolean): Integer = {
+    if (x) 1 else 0
+  }
+  def vrtx(x: Boolean, y: Boolean, z: Boolean): Point3D = {
+    new Point3D(o.x + w * toInt(x), o.y + h * toInt(y), o.z + d * toInt(z))
+  }
+}
+
+class Poly(val o: Point3D, val r: Double, val d: Double, val n: Integer){
+  val th = 360d/n.toDouble
+  def hcos(th: Double, i: Double, r: Double): Double = Math.cos(Math.toRadians(th * i)) * r
+  def hsin(th: Double, i: Double, r: Double): Double = Math.sin(Math.toRadians(th * i)) * r
+
+  def toInt(x: Boolean): Integer = {
+    if (x) 1 else 0
+  }
+
+  def toEdge3D(): List[Edge3D] = {
+    val circ = for (j <- 0 to 1) yield {
+      val ps = for (i <- ((0 to n - 1) :+ 0)) yield {
+        new Point3D(o.x + hcos(th, i, r), o.y + hsin(th, i, r), o.z + (d * j))
+      }
+      new Edge3D(ps.toList)
+    }
+    val edge = for (i <- 0 to n - 1) yield {
+      val ps = for (j <- 0 to 1) yield {
+        new Point3D(o.x + hcos(th, i, r), o.y + hsin(th, i, r), o.z + (d * j))
+      }
+      new Edge3D(ps.toList)
+    }
+    circ.toList ++ edge.toList
+  }
+
+  def vrtx(isBack: Boolean, i: Integer): Point3D = {
+    new Point3D(o.x + hcos(th, i.toDouble, r), o.y + hsin(th, i.toDouble, r), o.z + (d * toInt(isBack)))
+  }
+}
 
 object WireFrameModel {
   def makeEdgeD3D(ls: List[Tuple2[Tuple3[Double, Double, Double], Tuple3[Double, Double, Double]]]): List[EdgeD3D] = {
@@ -57,17 +117,6 @@ object WireFrameModel {
     }
     es.toList
   }
-  val data06 = makePoly(new Point3D(0d, 0d, 0d), 12d, 20d, 6) ++ makeEdge3D(List(
-    List((hcos_old(1),hsin_old(1),0d), (hcos_old(1),hsin_old(1),20d)),
-    List((hcos_old(2),hsin_old(2),0d), (hcos_old(2),hsin_old(2),20d)),
-    List((hcos_old(3),hsin_old(3),0d), (hcos_old(3),hsin_old(3),20d)),
-    List((hcos_old(4),hsin_old(4),0d), (hcos_old(4),hsin_old(4),20d)),
-    List((hcos_old(5),hsin_old(5),0d), (hcos_old(5),hsin_old(5),20d)),
-    List((hcos_old(1),hsin_old(1),20d), (hcos_old(1)+10d,hsin_old(1),120d)),
-    List((hcos_old(2),hsin_old(2),20d), (hcos_old(2)-10d,hsin_old(1),120d)),
-    List((hcos_old(4),hsin_old(4),20d), (hcos_old(4)-10d,hsin_old(1),120d)),
-    List((hcos_old(5),hsin_old(5),20d), (hcos_old(5)+10d,hsin_old(1),120d)),
-    List((hcos_old(2)-10d,hsin_old(1),120d), (hcos_old(5)+10d,hsin_old(1),120d))))
 
   val data06_old = makeEdge3D(List(
     List(
