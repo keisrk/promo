@@ -41,64 +41,49 @@ object WireFrameModel {
     List(new Edge3D(List(o, x, zx, xyz, yz, y, o, z, yz)), new Edge3D(List(z, zx)), new Edge3D(List(x, xy, xyz)), new Edge3D(List(y, xy)))
   }
 
-  val data01 = List(
-    ((100d, 200d, 250d), (200d, 200d, 250d)),
-    ((100d, 200d, 250d), (100d, 300d, 250d)),
-    ((100d, 200d, 250d), (100d, 200d, 350d)),
-    ((200d, 200d, 250d), (100d, 300d, 250d)),
-    ((200d, 200d, 250d), (100d, 200d, 350d)),
-    ((100d, 300d, 250d), (100d, 200d, 350d))
-  )
-  val data02 = List(
-    (( 30d,  30d,  30d), (130d,  30d,  30d)),
-    (( 30d,  30d,  30d), ( 30d, 130d,  30d)),
-    (( 30d,  30d,  30d), ( 30d,  30d, 130d)),
-    ((130d,  30d,  30d), (130d, 130d,  30d)),
-    ((130d,  30d,  30d), (130d,  30d, 130d)),
-    (( 30d, 130d,  30d), ( 30d, 130d, 130d)),
-    (( 30d, 130d,  30d), (130d, 130d,  30d)),
-    (( 30d,  30d, 130d), (130d,  30d, 130d)),
-    (( 30d,  30d, 130d), ( 30d, 130d, 130d)),
-    (( 30d, 130d, 130d), (130d, 130d, 130d)),
-    ((130d,  30d, 130d), (130d, 130d, 130d)),
-    ((130d, 130d,  30d), (130d, 130d, 130d))
-  )
+  def hcos_old(i: Double): Double = Math.cos(Math.toRadians(60 * i)) * 12d
+  def hsin_old(i: Double): Double = Math.sin(Math.toRadians(60 * i)) * 12d
 
-  val test02 = makeEdgeD3D(data01 ++ data02)
+  def hcos(th: Double, i: Double, r: Double): Double = Math.cos(Math.toRadians(th * i)) * r
+  def hsin(th: Double, i: Double, r: Double): Double = Math.sin(Math.toRadians(th * i)) * r
 
-  val data03 = List(
-    List((30d,30d, 30d), (30d,30d, 150d), (30d,100d, 150d), (30d,30d, 30d)),
-    List((30d,30d, 30d), (30d,150d, 30d), (30d,150d, 100d), (30d,30d, 30d))
-  )
+  def makePoly(o: Point3D, r: Double, d: Double, n: Integer): List[Edge3D] = {
+    val th = 360d/n.toDouble
+    val es = for (j <- 0 to 1) yield {
+      val ps = for (i <- ((0 to n - 1) :+ 0)) yield {
+        new Point3D(o.x + hcos(th, i, r), o.y + hsin(th, i, r), o.z + (d * j))
+      }
+      new Edge3D(ps.toList)
+    }
+    es.toList
+  }
+  val data06 = makePoly(new Point3D(0d, 0d, 0d), 12d, 20d, 6) ++ makeEdge3D(List(
+    List((hcos_old(1),hsin_old(1),0d), (hcos_old(1),hsin_old(1),20d)),
+    List((hcos_old(2),hsin_old(2),0d), (hcos_old(2),hsin_old(2),20d)),
+    List((hcos_old(3),hsin_old(3),0d), (hcos_old(3),hsin_old(3),20d)),
+    List((hcos_old(4),hsin_old(4),0d), (hcos_old(4),hsin_old(4),20d)),
+    List((hcos_old(5),hsin_old(5),0d), (hcos_old(5),hsin_old(5),20d)),
+    List((hcos_old(1),hsin_old(1),20d), (hcos_old(1)+10d,hsin_old(1),120d)),
+    List((hcos_old(2),hsin_old(2),20d), (hcos_old(2)-10d,hsin_old(1),120d)),
+    List((hcos_old(4),hsin_old(4),20d), (hcos_old(4)-10d,hsin_old(1),120d)),
+    List((hcos_old(5),hsin_old(5),20d), (hcos_old(5)+10d,hsin_old(1),120d)),
+    List((hcos_old(2)-10d,hsin_old(1),120d), (hcos_old(5)+10d,hsin_old(1),120d))))
 
-  val data05 = makeRect(new Point3D(0d, 0d, 0d), 30, 6, 120) ++ 
-    makeRect(new Point3D(0d, -10d, 0d), 30, 10, 6) ++
-    makeRect(new Point3D(0d, -10d, 114d), 30, 10, 6)
-
-  val test03 = makeEdge3D(data03)
-  val test04 = makeRect(new Point3D(0d, 0d, 0d), 100, 100, 100)
-  val test05a = translateEdge3D(data05, new Point3D(0d, 0d, -60d))
-  val test05b = translateEdge3D(data05, new Point3D(0d, 0d, -60d))
-  val test05c = translateEdge3D(data05, new Point3D(0d, 0d, -60d))              
-
-  def hcos(i: Double): Double = Math.cos(Math.toRadians(60 * i)) * 12d
-  def hsin(i: Double): Double = Math.sin(Math.toRadians(60 * i)) * 12d
-
-  val data06 = makeEdge3D(List(
+  val data06_old = makeEdge3D(List(
     List(
-      (hcos(0),hsin(0),0d), (hcos(1),hsin(1),0d), (hcos(2),hsin(2),0d), (hcos(3),hsin(3),0d), (hcos(4),hsin(4),0d), (hcos(5),hsin(5),0d), (hcos(0),hsin(0),0d),
-      (hcos(1),hsin(1),20d), (hcos(2),hsin(2),20d), (hcos(3),hsin(3),20d), (hcos(4),hsin(4),20d), (hcos(5),hsin(5),20d), (hcos(0),hsin(0),20d), (hcos(1),hsin(1),20d)
+      (hcos_old(0),hsin_old(0),0d), (hcos_old(1),hsin_old(1),0d), (hcos_old(2),hsin_old(2),0d), (hcos_old(3),hsin_old(3),0d), (hcos_old(4),hsin_old(4),0d), (hcos_old(5),hsin_old(5),0d), (hcos_old(0),hsin_old(0),0d),
+      (hcos_old(1),hsin_old(1),20d), (hcos_old(2),hsin_old(2),20d), (hcos_old(3),hsin_old(3),20d), (hcos_old(4),hsin_old(4),20d), (hcos_old(5),hsin_old(5),20d), (hcos_old(0),hsin_old(0),20d), (hcos_old(1),hsin_old(1),20d)
     ),
-    List((hcos(1),hsin(1),0d), (hcos(1),hsin(1),20d)),
-    List((hcos(2),hsin(2),0d), (hcos(2),hsin(2),20d)),
-    List((hcos(3),hsin(3),0d), (hcos(3),hsin(3),20d)),
-    List((hcos(4),hsin(4),0d), (hcos(4),hsin(4),20d)),
-    List((hcos(5),hsin(5),0d), (hcos(5),hsin(5),20d)),
-    List((hcos(1),hsin(1),20d), (hcos(1)+10d,hsin(1),120d)),
-    List((hcos(2),hsin(2),20d), (hcos(2)-10d,hsin(1),120d)),
-    List((hcos(4),hsin(4),20d), (hcos(4)-10d,hsin(1),120d)),
-    List((hcos(5),hsin(5),20d), (hcos(5)+10d,hsin(1),120d)),
-    List((hcos(2)-10d,hsin(1),120d), (hcos(5)+10d,hsin(1),120d))
+    List((hcos_old(1),hsin_old(1),0d), (hcos_old(1),hsin_old(1),20d)),
+    List((hcos_old(2),hsin_old(2),0d), (hcos_old(2),hsin_old(2),20d)),
+    List((hcos_old(3),hsin_old(3),0d), (hcos_old(3),hsin_old(3),20d)),
+    List((hcos_old(4),hsin_old(4),0d), (hcos_old(4),hsin_old(4),20d)),
+    List((hcos_old(5),hsin_old(5),0d), (hcos_old(5),hsin_old(5),20d)),
+    List((hcos_old(1),hsin_old(1),20d), (hcos_old(1)+10d,hsin_old(1),120d)),
+    List((hcos_old(2),hsin_old(2),20d), (hcos_old(2)-10d,hsin_old(1),120d)),
+    List((hcos_old(4),hsin_old(4),20d), (hcos_old(4)-10d,hsin_old(1),120d)),
+    List((hcos_old(5),hsin_old(5),20d), (hcos_old(5)+10d,hsin_old(1),120d)),
+    List((hcos_old(2)-10d,hsin_old(1),120d), (hcos_old(5)+10d,hsin_old(1),120d))
   ))
 
   def rotate(p: Point3D, or: Orient): Point3D = {
