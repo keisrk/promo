@@ -23,10 +23,10 @@ object Data {
     val quo = i.toInt / 240
     if (mod <= 180) {
       (1 to quo).toList.foldLeft(List(new Edge3D(List()))) { (l, j) =>
-        WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d - (60d * j.toDouble)*0.4, -100d, 600d)) ++ l}
+        WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d - (60d * j.toDouble)*0.4, -100d, 600d)) ++ l}
     } else {
       (1 to quo).toList.foldLeft(List(new Edge3D(List()))) { (l, j) =>
-        WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d - ((mod - 180d) + 60d * j)*0.4, -100d, 600d)) ++ l}
+        WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d - ((mod - 180d) + 60d * j)*0.4, -100d, 600d)) ++ l}
     }}
 
   val fl = new Rect(new Point3D(0d, 0d, 0d), 6d, 40d, 100d)
@@ -44,14 +44,14 @@ object Data {
   )
   val tl02_m360: Double => List[Edge3D] = (i: Double) =>
     if (0<= i && i< 120) {
-      WireFrameModel.translateEdge3D(flapL, new Point3D(-20d, -60d, 520d))++
-      WireFrameModel.translateEdge3D(flapR, new Point3D(20d, -60d, 520d))
+      WireFrameModel.translateEdge3D(flapL, new Point3D(-10d, -60d, 520d))++
+      WireFrameModel.translateEdge3D(flapR, new Point3D(30d, -60d, 520d))
     } else if (120<= i && i< 180) {
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapL, new Point3D(0d, -40d, 0d)), 120d -1 * i, 0d), new Point3D(-20d, -20d, 520d))++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapR, new Point3D(0d, -40d, 0d)), i -120d, 0d), new Point3D(20d, -20d, 520d))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapL, new Point3D(0d, -40d, 0d)), 120d -1 * i, 0d), new Point3D(-10d, -20d, 520d))++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapR, new Point3D(0d, -40d, 0d)), i -120d, 0d), new Point3D(30d, -20d, 520d))
     } else {
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapL, new Point3D(0d, -40d, 0d)), (i -180d) -60d, 0d), new Point3D(-20d, -20d, 520d))++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapR, new Point3D(0d, -40d, 0d)), 60d - (i -180d), 0d), new Point3D(20d, -20d, 520d))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapL, new Point3D(0d, -40d, 0d)), (i -180d) -60d, 0d), new Point3D(-10d, -20d, 520d))++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(WireFrameModel.translateEdge3D(flapR, new Point3D(0d, -40d, 0d)), 60d - (i -180d), 0d), new Point3D(30d, -20d, 520d))
     }
 
   val tl01_m360: Double => List[Edge3D] = (i: Double) =>
@@ -59,32 +59,32 @@ object Data {
       WireFrameModel.rotateEdge3D(test05a, 0d, 30d) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05c, 0d, 30d - i), new Point3D(0d, 0d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 0d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 150d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 300d + 2.5 * i))
 
     } else if(60 <= i && i < 120) {
       WireFrameModel.rotateEdge3D(test05a, 0d, 30d) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05b, 0d, 90d - i), new Point3D(0d, 0d, 150d)) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05c, 0d, i - 90d), new Point3D(0d, 0d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 0d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 150d + 2.5 * (i - 60d))) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 300d + 2.5 * i))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 0d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 150d + 2.5 * (i - 60d))) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 300d + 2.5 * i))
 
     } else if(120 <= i && i < 180) {
       WireFrameModel.rotateEdge3D(test05a, 0d, 150d - i) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05b, 0d, i - 150d), new Point3D(0d, 0d, 150d)) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 0d + 2.5 * (i - 120d))) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d - (i-120), 600d))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 0d + 2.5 * (i - 120d))) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 300d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d - (i-120), 600d))
 
     } else {
       WireFrameModel.rotateEdge3D(test05a, 0d, i - 210d) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05b, 0d, 30d), new Point3D(0d, 0d, 150d)) ++
       WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(test05c, 0d, 30d), new Point3D(0d, 0d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 150d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d, -40d, 300d)) ++
-      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(-10d - (i - 180)*0.4, -100d, 600d))
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 150d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d, -40d, 300d)) ++
+      WireFrameModel.translateEdge3D(WireFrameModel.rotateEdge3D(data06, 0d, 180d), new Point3D(15d - (i - 180)*0.4, -100d, 600d))
     }
 }
