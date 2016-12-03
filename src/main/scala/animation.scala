@@ -1,22 +1,19 @@
 package promotion.animation
 
-import scala.annotation.tailrec
-abstract class Transition
-case class ON2OFF(t: Double) extends Transition
-case class OFF2ON(t: Double) extends Transition
-case class ON(t: Double) extends Transition
-case class OFF(t: Double) extends Transition
+import promotion.wireframemodel.Edge3D
+import promotion.data.Data
 
-object TimeLine {
-  @tailrec
-  def s_of_assoc(acc: List[Transition], asc: List[Tuple2[Double, Boolean]]): List[Transition] = {
-    asc match {
-      case Nil => acc
-      case (d, true)::xs => s_of_assoc((ON(d)::OFF2ON(0.5)::acc), xs)
-      case (d, false)::xs => s_of_assoc((OFF(d)::ON2OFF(0.5)::acc), xs)
-    }
+class Clock(val m: Int) {
+  var t = 0d
+  def incl(x: Double) : Unit = {
+    t = (t + x) % m
   }
-  def of_assoc(asc: List[Tuple2[Double, Boolean]]): List[Transition] = {
-    s_of_assoc(List(), asc).reverse
+
+  def time(): Double = {
+    t
+  }
+  def tl(ts: List[Double => List[Edge3D]]): List[Edge3D] = ts match {
+    case Nil => Nil
+    case f::fs => f(this.time()) ++ tl(fs)
   }
 }

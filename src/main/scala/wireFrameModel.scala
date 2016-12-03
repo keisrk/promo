@@ -3,19 +3,19 @@ package promotion.wireframemodel
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 
 class Window(val r: Double, val x: Double, val y: Double)
-class Point2D(val x: Double, val y: Double){
-}
+class Point2D(val x: Double, val y: Double)
 class Point3D(val x: Double, val y: Double, val z: Double){
   def xpls(i: Double): Point3D = {
     new Point3D(x + i, y, z)
   }
-  def ypls(i: Double): Point3D = {
+  def ypls(i: Double): Point3D = {	
     new Point3D(x, y + i, z)
   }
   def zpls(i: Double): Point3D = {
     new Point3D(x, y, z + i)
   }
 }
+
 class Edge2D(val p2: List[Point2D])
 class Edge3D(val p3: List[Point3D])
 
@@ -117,23 +117,6 @@ object WireFrameModel {
     }
     es.toList
   }
-
-  val data06_old = makeEdge3D(List(
-    List(
-      (hcos_old(0),hsin_old(0),0d), (hcos_old(1),hsin_old(1),0d), (hcos_old(2),hsin_old(2),0d), (hcos_old(3),hsin_old(3),0d), (hcos_old(4),hsin_old(4),0d), (hcos_old(5),hsin_old(5),0d), (hcos_old(0),hsin_old(0),0d),
-      (hcos_old(1),hsin_old(1),20d), (hcos_old(2),hsin_old(2),20d), (hcos_old(3),hsin_old(3),20d), (hcos_old(4),hsin_old(4),20d), (hcos_old(5),hsin_old(5),20d), (hcos_old(0),hsin_old(0),20d), (hcos_old(1),hsin_old(1),20d)
-    ),
-    List((hcos_old(1),hsin_old(1),0d), (hcos_old(1),hsin_old(1),20d)),
-    List((hcos_old(2),hsin_old(2),0d), (hcos_old(2),hsin_old(2),20d)),
-    List((hcos_old(3),hsin_old(3),0d), (hcos_old(3),hsin_old(3),20d)),
-    List((hcos_old(4),hsin_old(4),0d), (hcos_old(4),hsin_old(4),20d)),
-    List((hcos_old(5),hsin_old(5),0d), (hcos_old(5),hsin_old(5),20d)),
-    List((hcos_old(1),hsin_old(1),20d), (hcos_old(1)+10d,hsin_old(1),120d)),
-    List((hcos_old(2),hsin_old(2),20d), (hcos_old(2)-10d,hsin_old(1),120d)),
-    List((hcos_old(4),hsin_old(4),20d), (hcos_old(4)-10d,hsin_old(1),120d)),
-    List((hcos_old(5),hsin_old(5),20d), (hcos_old(5)+10d,hsin_old(1),120d)),
-    List((hcos_old(2)-10d,hsin_old(1),120d), (hcos_old(5)+10d,hsin_old(1),120d))
-  ))
 
   def rotate(p: Point3D, or: Orient): Point3D = {
     or match {
