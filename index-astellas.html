@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>The Promotion</title>
+  </head>
+  <body>
+    <canvas id="canvas01" width="1000" height="800"></canvas>
+    <p><input id="rot_val" type="range" max="360" value="60"></p>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="./target/scala-2.11/promotion-fastopt.js"></script>
+    <!-- Run tutorial.webapp.TutorialApp -->
+    <script type="text/javascript">
+      promotion.PromotionApp().drawAst(document.getElementById('canvas01'), document.getElementById('rot_val'));
+    </script>
+  </body>
+</html>

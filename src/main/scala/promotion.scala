@@ -8,15 +8,15 @@ import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 
 import dom.document
 import dom.html
-import promotion.wireframemodel.{Window, WireFrameModel => WFM, Point3D, Edge3D}
-import promotion.data.Data
+import promotion.wireframemodel.{Window, WireFrameModel => WFM, Point3D, Edge3D, P2D}
+import promotion.data.{Data, Astellas}
 import promotion.animation.Clock
 object PromotionApp extends JSApp {
   @JSExport
   def draw(cnv: html.Canvas, inp: html.Input): Unit = {
     val ctx = cnv.getContext("2d")
       .asInstanceOf[Ctx2D]
-    ctx.scale(1, -1)
+    ctx.scale(1, 1)
     ctx.translate(0, -cnv.height)
 
     val cl = new Clock(240)
@@ -28,6 +28,34 @@ object PromotionApp extends JSApp {
       WFM.draw(ctx, cl.tl(List(Data.tl01_m360, Data.tl02_m360)), new Window(inp.value.toDouble, cnv.width/2d, cnv.height/4d))
       WFM.draw(ctx, global_cl.tl(List(Data.tl03_m1200)), new Window(inp.value.toDouble, cnv.width/2d, cnv.height/4d))
     }, 20)
+  }
+  @JSExport
+  def drawAst(cnv: html.Canvas, inp: html.Input): Unit = {
+    val ctx = cnv.getContext("2d")
+      .asInstanceOf[Ctx2D]
+    ctx.scale(1, -1)
+    ctx.translate(0, -cnv.height)
+
+    val cl = new Clock(480)
+    val global_cl = new Clock(1200)
+    dom.window.setInterval(() => {
+      ctx.clearRect(0, 0, cnv.width, cnv.height)
+      cl.incl(1d)
+      global_cl.incl(1d)
+      WFM.draw(ctx, cl.tl(List(Astellas.t_m)), new Window(inp.value.toDouble, cnv.width/2d, cnv.height/4d))
+//      WFM.draw(ctx, global_cl.tl(List(Data.tl03_m1200)), new Window(inp.value.toDouble, cnv.width/2d, cnv.height/4d))
+    }, 20)
+  }
+  @JSExport
+  def drawSanten(cnv: html.Canvas, inp: html.Input): Unit = {
+      val p = new P2D
+      val ctx = cnv.getContext("2d")
+      .asInstanceOf[Ctx2D]
+    dom.window.setInterval(() => {
+      ctx.clearRect(0, 0, cnv.width, cnv.height)
+      p.draw(ctx, List(), (3d, 3d, 3d))
+      }, 20
+    )
   }
   def main(): Unit = {}
 }

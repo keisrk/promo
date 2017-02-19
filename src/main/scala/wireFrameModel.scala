@@ -2,6 +2,64 @@ package promotion.wireframemodel
 
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 
+trait Prelude {
+  type Window
+  type Point
+  def dump(p: Point, w: Window): (Double, Double)
+  type Edge = List[Point]
+  sealed trait Shape
+  final case class Vec(v: Point) extends Shape
+  final case class Circ(r: Double) extends Shape
+  final case class Other(e: Edge) extends Shape
+  def load(s: String): List[Shape]
+
+  def toEdge(s: Shape, o: Point, w: Window): Edge
+  def draw(ctx: Ctx2D, es: List[Edge], w: Window): Unit = {
+    ctx.beginPath()
+    for (e <- es) {
+      e match {
+        case Nil => {}
+	case p::tl => {
+          ((tp: (Double, Double))=> ctx.moveTo(tp._1, tp._2))(dump(p, w))
+	  for (q <- tl) {
+          ((tp: (Double, Double))=> ctx.lineTo(tp._1, tp._2))(dump(p, w))
+	  }
+	}
+      }
+    }
+    ctx.stroke()
+  }
+}
+
+class P2D extends Prelude {
+  type Window = (Double, Double, Double)
+  type Point = (Double, Double)
+  def dump(x: Point, w: Window) = x
+  def load(s: String) = List()
+  def toEdge(s: Shape, o: Point, w: Window) = s match {
+    case _ => List()
+  }
+}
+
+class P3D extends Prelude {
+  type Window = (Double, Double, Double, Double)
+  type Point = (Double, Double, Double)
+  def dump(x: Point, w: Window) = (x._1, x._1)
+  def load(s: String) = List()
+  def project(p: Point, rot: Double): (Double, Double) = p match {
+  case (x, y, z) => {
+    val nx = Math.cos(Math.toRadians(rot)) * x - Math.sin(Math.toRadians(rot)) * z
+    val ny = y
+    val nz = Math.sin(Math.toRadians(rot)) * x + Math.cos(Math.toRadians(rot)) * z
+    val show = nz * 0.5
+    (nx + show, ny + show)
+    }
+  }
+  def toEdge(s: Shape, o: Point, w: Window) = s match {
+    case _ => List()
+  }
+}
+
 class Window(val r: Double, val x: Double, val y: Double)
 class Point2D(val x: Double, val y: Double)
 class Point3D(val x: Double, val y: Double, val z: Double){
@@ -19,12 +77,10 @@ class Point3D(val x: Double, val y: Double, val z: Double){
 class Edge2D(val p2: List[Point2D])
 class Edge3D(val p3: List[Point3D])
 
-class EdgeD2D(val org: Point2D, val dst: Point2D)
-class EdgeD3D(val org: Point3D, val dst: Point3D)
-
 abstract class Orient
 case class XY(r: Double) extends Orient
 case class YZ(r: Double) extends Orient
+case class ZX(r: Double) extends Orient
 
 class Rect(val o: Point3D, val w: Double, val h: Double, val d: Double) {
   def toEdge3D(): List[Edge3D] = {
@@ -76,19 +132,6 @@ class Poly(val o: Point3D, val r: Double, val d: Double, val n: Integer){
 }
 
 object WireFrameModel {
-  def makeEdgeD3D(ls: List[Tuple2[Tuple3[Double, Double, Double], Tuple3[Double, Double, Double]]]): List[EdgeD3D] = {
-    for (((ox, oy, oz), (dx, dy, dz)) <- ls) yield {
-      val org = new Point3D(ox, oy, oz)
-      val dst = new Point3D(dx, dy, dz)
-      new EdgeD3D(org, dst)
-    }
-  }
-
-  def makeEdge3D(ls: List[List[Tuple3[Double, Double, Double]]]): List[Edge3D] = {
-    for (l <- ls) yield {
-      new Edge3D(for ((x, y, z) <- l) yield {new Point3D(x, y, z)})
-    }
-  }
 
   def makeRect(o: Point3D, w: Double, h: Double, d: Double): List[Edge3D] = {
     val x = new Point3D(o.x + w, o.y, o.z)
@@ -130,13 +173,18 @@ object WireFrameModel {
 	val ny = Math.cos(Math.toRadians(rot)) * p.y - Math.sin(Math.toRadians(rot)) * p.z 
       	val nz = Math.sin(Math.toRadians(rot)) * p.y + Math.cos(Math.toRadians(rot)) * p.z
 	new Point3D(nx, ny, nz)}
+      case ZX(rot) => {
+        val nx = Math.sin(Math.toRadians(rot)) * p.z + Math.cos(Math.toRadians(rot)) * p.x
+        val ny = p.y
+      	val nz = Math.cos(Math.toRadians(rot)) * p.z - Math.sin(Math.toRadians(rot)) * p.x
+	new Point3D(nx, ny, nz)}
     }
   }
 
-  def rotateEdge3D(es: List[Edge3D], xy: Double, yz: Double): List[Edge3D] = {
+  def rotateEdge3D(es: List[Edge3D], xy: Double, yz: Double, zx: Double): List[Edge3D] = {
     for (e <- es) yield {
       new Edge3D(for (p <- e.p3) yield {
-        rotate(rotate(p, new XY(xy)), new YZ(yz))
+        rotate(rotate(rotate(p, new XY(xy)), new YZ(yz)), new ZX(zx))
       })
     }
   }
@@ -159,18 +207,6 @@ object WireFrameModel {
     val nz = Math.sin(Math.toRadians(rot)) * p.x + Math.cos(Math.toRadians(rot)) * p.z
     val show = nz * 0.5
     new Point2D(nx + show, ny + show)
-  }
-
-  def drawD(ctx: Ctx2D, es: List[EdgeD3D], w: Window): Unit = {
-    ctx.beginPath()
-    for (e <- es) {
-      val o = project(e.org, w.r)
-      val d = project(e.dst, w.r)
-
-      ctx.moveTo(o.x + w.x, o.y + w.y)
-      ctx.lineTo(d.x + w.x, d.y + w.y)
-    }
-    ctx.stroke()
   }
 
   def draw(ctx: Ctx2D, es: List[Edge3D], w: Window): Unit = {
