@@ -1,5 +1,5 @@
 package promotion.data
-import promotion.wireframemodel.{Point3D, Edge3D, WireFrameModel, Poly, Rect}
+import promotion.wireframemodelOld.{Point3D, Edge3D, WireFrameModel, Poly, Rect}
 object Data {
 
   val data05 = WireFrameModel.makeRect(new Point3D(0d, 0d, 0d), 30, 6, 120) ++ 

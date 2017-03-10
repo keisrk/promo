@@ -1,6 +1,6 @@
 package promotion.animation
 
-import promotion.wireframemodel.Edge3D
+import promotion.wireframemodelOld.Edge3D
 import promotion.data.Data
 
 class Clock(val m: Int) {

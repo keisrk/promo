@@ -1,101 +1,49 @@
 package promotion.matrix
 
-class Matrix (p_data: Array[Array[Double]]) {
-  val data = p_data map (_ clone)
-  
-  require(data.length > 0 && data(0).length > 0, "Matrix data table could not be empty")
-  require(data.foldLeft(true)(_ && _.length == data(0).length), "Matrix rows have to contains the same number of elements")
-  
-  def this(rows: Int, cols: Int) = this ({
-      require(rows > 0 && cols > 0, "Matrix data table could not be empty")
-      Array.fill(rows, cols)(0d)
-    })
-  
-  def load(lines: Iterator[String]) = {
-    for (i <- 0 until rows) {
-      require(lines.hasNext, "Exception in loading data: unexpected end of data")
-      val tokens = lines.next.trim.split("\t")
-      require(tokens.length == cols, "Exception in loading data: expected %d columns but was %d".format(cols, tokens.length))
-      for (j <- 0 until tokens.length) 
-        set(i, j, tokens(j).toDouble)
-    }
-  }
-  
-  def set(row: Int, col: Int, value: Double) = data(row)(col) = value
-  def add(row: Int, col: Int, value: Double) = data(row)(col) += value
-  def clear() = data.foreach(row => for (col <- row.indices) row(col) = 0)
-  def get(row: Int, col: Int) = data(row)(col)
+object DblMat {
+  type Mat = Seq[Seq[Double]]
+  def row(m: Mat, i: Int): Seq[Double] = m(i)
+  def col(m: Mat, j: Int): Seq[Double] = for (r <- m) yield r(j)
 
-  def rows = data.length
-  def getRow(rowNumber: Int) = new Matrix(Array(data(rowNumber) clone))  
-  def cols = data(0).length    
-  def getCol(columnNumber: Int) = new Matrix(data map {row: Array[Double] => Array(row(columnNumber))})
-  
-  def sum = data.flatten.sum
-  def toPackedArray[Array[Double]] = data.flatten
-    
-  def isColumn = data(0).length == 1
-  def isRow = data.length == 1
-  def isZero = ! data.flatten.exists(_ != 0)
-
-  // Precision of 10^-20 guarantees exact identity of double values for java/scala
-  def equalsWithPrecision(other: Matrix, precision: Int = 20) =
-    (data.length == other.data.length) && ((data flatten).length == (other.data flatten).length) &&
-      ((toPackedArray zip other.toPackedArray).foldLeft(true)({
-        (result, pair) => result && (math.abs(pair._1 - pair._2) * math.pow(10, precision) < 1)
-      }))
-
-  def dump = { val b = new StringBuilder(); data.foreach(row => b.append(row.mkString(" ")).append("\n")); b toString }
-    
-  override def clone = new Matrix(data)
-  override def toString = "Matrix {%d x %d}".format(data.length, data(0).length)
-  override def equals(other: Any) = other.isInstanceOf[Matrix] && equalsWithPrecision(other.asInstanceOf[Matrix])
-  override def hashCode = java.util.Arrays.deepHashCode(data.asInstanceOf[Array[Object]])
-}
-
-object Matrix {
-  def createColumnMatrix(data: Array[Double]) = new Matrix(data map (Array(_)))
-  def createRowMatrix(data: Array[Double]) = new Matrix(Array(data))
-}
-
-object MatrixMath {
-  def add(a: Matrix, b: Matrix) = {
-    require(a.rows == b.rows && a.cols == b.cols, "Only matrixes with the same size can be summed: " + a + "; " + b)
-    val data = a.toPackedArray zip b.toPackedArray map ({ case (aValue, bValue) => aValue + bValue })
-    new Matrix((for(i <- 0 until a.rows) yield data.slice(i*a.cols, (i+1)*a.cols)) toArray)
+  def init(row: Int, col: Int, f: (Int, Int) => Double): Mat = {
+    for (i <- 0 until col) yield {
+      for (j <- 0 until row) yield f(i, j)}
   }
 
-  def divide(a: Matrix, b: Double) = multiply(a, 1d /b)
+  def s_dotp(a: Seq[Double], b: Seq[Double]): Seq[Double] = {
+    assert(a.length == b.length)
+    for ((ea, eb) <- a.zip(b)) yield ea * eb
+  }
 
-  def dotProduct(a: Matrix, b: Matrix) = {
-    require(a.isRow && b.isColumn, "Dot product is available only for row * column: " + a + "; " + b);
-    require(a.cols == b.rows, "Matrix sizes are not match: " + a + "; " + b)
-    (a.toPackedArray zip b.toPackedArray).foldLeft(0d)({ (sum, pair) => sum + pair._1 * pair._2 })
+  def dotp(a: Mat, b: Mat, r: Int, c: Int): Mat = {
+    init(r, c, (i: Int, j: Int) => s_dotp(row(a, i), col(b, j)).sum)
   }
-  
-  def identity(size: Integer) = new Matrix(
-    Array.tabulate(size, size)({(rowIndex, colIndex) => if(rowIndex == colIndex) 1d else 0d})
-  )
-  
-  def multiply(a: Matrix, b: Double) = new Matrix(a.data map ({ row => row map ({value: Double => value*b}) }))
-  
-  def multiply(a: Matrix, b: Matrix) = {       
-    require(a.cols == b.rows, "Matrix sizes are not match: " + a + "; " + b)           
-    new Matrix(
-      Array.tabulate(a.rows, b.cols)( {(row, col) => 
-          (for(i <- 0 until a.cols) yield a.data(row)(i) * b.data(i)(col)) sum // replace with while loop and get 10x performance
-      })
-    )
-  }
-  
-  def subtract(a: Matrix, b: Matrix) = add(a, multiply(b, -1))
-   
-  def transpose(a: Matrix) = new Matrix(
-    (for(i <- 0 until a.cols) yield a.getCol(i).toPackedArray) toArray
-  )
 
-  def vectorLength(a: Matrix) = {    
-    require(a.isRow || a.isColumn, "Only single-row or single-column matrixes has vector length: " + a);
-    math.sqrt(a.toPackedArray.foldLeft(0d)({ (sum, value) => sum + value*value }))
+  def reduce(v: Seq[Double], m: Mat): Seq[Double] = {
+    for (i <- 0 until v.length) yield s_dotp(v, col(m, i)).sum
   }
+
+  def sin(rot: Double): Double = Math.sin(Math.toRadians(rot))
+  def cos(rot: Double): Double = Math.cos(Math.toRadians(rot))
+
+  def rotx(rx: Double): Mat = {
+    Seq(
+      Seq(1d, 0d,      0d,           0d),
+      Seq(0d, cos(rx), -1 * sin(rx), 0d),
+      Seq(0d, sin(rx), cos(rx),      0d),
+      Seq(0d, 0d,      0d,           1d))
+  }
+
+  val ex_a = Seq(
+             Seq(2d, 6d, 1d, 3d),
+             Seq(8d, 3d, 5d, 4d),
+             Seq(4d, 1d, 2d, 9d),
+             Seq(6d, 2d, 1d, 2d))
+  val ex_b = Seq(
+             Seq(3d, 2d, 8d, 3d),
+             Seq(1d, 7d, 3d, 1d),
+             Seq(6d, 2d, 1d, 7d),
+             Seq(1d, 1d, 3d, 2d))
+  val ex_a_0 = col(ex_a, 0); val ex_a_1 = col(ex_a, 1); val ex_a_2 = col(ex_a, 2)
+  val ex_b_0 = col(ex_b, 0); val ex_b_1 = col(ex_b, 1); val ex_b_2 = col(ex_b, 2)
 }

@@ -8,7 +8,8 @@ import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 
 import dom.document
 import dom.html
-import promotion.wireframemodel.{Window, WireFrameModel => WFM, Point3D, Edge3D, P2D}
+import promotion.wireframemodelOld.{Window, WireFrameModel => WFM, Point3D, Edge3D}
+import promotion.wireframemodel.{P2D}
 import promotion.data.{Data, Astellas}
 import promotion.animation.Clock
 object PromotionApp extends JSApp {
@@ -48,14 +49,9 @@ object PromotionApp extends JSApp {
   }
   @JSExport
   def drawSanten(cnv: html.Canvas, inp: html.Input): Unit = {
-      val p = new P2D
-      val ctx = cnv.getContext("2d")
-      .asInstanceOf[Ctx2D]
-    dom.window.setInterval(() => {
-      ctx.clearRect(0, 0, cnv.width, cnv.height)
-      p.draw(ctx, List(), (3d, 3d, 3d))
-      }, 20
-    )
+    val p = new P2D
+    val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]
+    p.draw(ctx, p.toEdge(p.v, (20d, 20d), (3d, 3d, 3d)), (3d, 3d, 3d))
   }
   def main(): Unit = {}
 }
