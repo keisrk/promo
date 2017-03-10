@@ -10,17 +10,17 @@ object DblMat {
       for (j <- 0 until row) yield f(i, j)}
   }
 
-  def s_dotp(a: Seq[Double], b: Seq[Double]): Seq[Double] = {
+  def v_dotp(a: Seq[Double], b: Seq[Double]): Seq[Double] = {
     assert(a.length == b.length)
     for ((ea, eb) <- a.zip(b)) yield ea * eb
   }
 
   def dotp(a: Mat, b: Mat, r: Int, c: Int): Mat = {
-    init(r, c, (i: Int, j: Int) => s_dotp(row(a, i), col(b, j)).sum)
+    init(r, c, (i: Int, j: Int) => v_dotp(row(a, i), col(b, j)).sum)
   }
 
   def reduce(v: Seq[Double], m: Mat): Seq[Double] = {
-    for (i <- 0 until v.length) yield s_dotp(v, col(m, i)).sum
+    for (i <- 0 until v.length) yield v_dotp(v, col(m, i)).sum
   }
 
   def sin(rot: Double): Double = Math.sin(Math.toRadians(rot))

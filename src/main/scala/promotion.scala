@@ -9,7 +9,7 @@ import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 import dom.document
 import dom.html
 import promotion.wireframemodelOld.{Window, WireFrameModel => WFM, Point3D, Edge3D}
-import promotion.wireframemodel.{P2D}
+import promotion.wireframemodel.{P3D}
 import promotion.data.{Data, Astellas}
 import promotion.animation.Clock
 object PromotionApp extends JSApp {
@@ -48,10 +48,17 @@ object PromotionApp extends JSApp {
     }, 20)
   }
   @JSExport
-  def drawSanten(cnv: html.Canvas, inp: html.Input): Unit = {
-    val p = new P2D
+  def drawSanten(cnv: html.Canvas, inp: html.TextArea): Unit = {
+    val p = new P3D
     val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]
-    p.draw(ctx, p.toEdge(p.v, (20d, 20d), (3d, 3d, 3d)), (3d, 3d, 3d))
+    p.draw(ctx, p.load(inp.value).foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
+    dom.window.setInterval(() => {
+      ctx.clearRect(0, 0, cnv.width, cnv.height)
+      p.draw(ctx, p.load(inp.value).foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
+    }, 20)
+    //p.draw(ctx, p.jv.foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
+    //p.draw(ctx, p.e ++ p.toEdge(p.v, (3d, 3d, 3d, 3d)), (3d, 3d, 3d, 3d));
+    //println(p.jv)
   }
   def main(): Unit = {}
 }

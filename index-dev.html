@@ -6,12 +6,15 @@
   </head>
   <body>
     <canvas id="canvas01" width="400" height="400"></canvas>
-    <p><input id="rot_val" type="range" max="360" value="60"></p>
+    <p><textarea id="text_val" cols="100" rows="8">
+[{"shape": "vec", "data": [[25, 20, 20], [90, 90, 90]]},
+ {"shape": "ply", "data": [[0, 0, 0], [100, 0, 0], [0, 0, 0], [0, 100, 0], [0, 0, 0], [0, 0, 100]]},
+ {"shape": "ply", "data": [[60, 60, 60], [120, 60, 60], [120, 120, 0], [60, 120, 60], [60, 60, 60]]}]</textarea></p>
     <!-- Include Scala.js compiled code -->
     <script type="text/javascript" src="./target/scala-2.11/promotion-fastopt.js"></script>
     <!-- Run tutorial.webapp.TutorialApp -->
     <script type="text/javascript">
-      promotion.PromotionApp().drawSanten(document.getElementById('canvas01'), document.getElementById('rot_val'));
+      promotion.PromotionApp().drawSanten(document.getElementById('canvas01'), document.getElementById('text_val'));
     </script>
   </body>
 </html>
