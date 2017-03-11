@@ -4,6 +4,7 @@ import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
+import scala.scalajs.js.Dictionary
 // import org.scalajs.dom.extensions._
 
 import dom.document
@@ -48,17 +49,23 @@ object PromotionApp extends JSApp {
     }, 20)
   }
   @JSExport
-  def drawSanten(cnv: html.Canvas, inp: html.TextArea): Unit = {
+  def drawSanten(cnv: html.Canvas, shp: html.TextArea, trs: html.TextArea): Unit = {
+    val q = List("A", "B", "C")
     val p = new P3D
-    val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]
-    p.draw(ctx, p.load(inp.value).foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
+    val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]; ctx.scale(0.5, -0.5); ctx.translate(0, -cnv.height)
+    val cl = new Clock(100)
+    val j_sh = p.load(shp.value)
+    val j_tr = p.load_trs(trs.value)
+    val es = p.mashup(j_sh, j_tr, cl.state(q), 1d)
+    p.draw(ctx, es, (0d, 0d, 0d))
     dom.window.setInterval(() => {
-      ctx.clearRect(0, 0, cnv.width, cnv.height)
-      p.draw(ctx, p.load(inp.value).foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
+      ctx.clearRect(0, 0, cnv.width * 2, cnv.height)
+      cl.incl(1d)
+      val j_sh = p.load(shp.value)
+      val j_tr = p.load_trs(trs.value)
+      val es = p.mashup(j_sh, j_tr, cl.state(q), cl.inter())
+      p.draw(ctx, es, (0d, 0d, 0d))
     }, 20)
-    //p.draw(ctx, p.jv.foldLeft(List[p.Edge]()){(acc, s) => acc ++ p.toEdge(s, (3d, 3d, 3d, 3d))}, (3d, 3d, 3d, 3d))
-    //p.draw(ctx, p.e ++ p.toEdge(p.v, (3d, 3d, 3d, 3d)), (3d, 3d, 3d, 3d));
-    //println(p.jv)
   }
   def main(): Unit = {}
 }

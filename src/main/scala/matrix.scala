@@ -1,5 +1,8 @@
 package promotion.matrix
 
+import scala.scalajs.js.{Array, Dynamic, JSON}
+import scala.scalajs.js.Dictionary
+
 object DblMat {
   type Mat = Seq[Seq[Double]]
   def row(m: Mat, i: Int): Seq[Double] = m(i)
@@ -18,20 +21,50 @@ object DblMat {
   def dotp(a: Mat, b: Mat, r: Int, c: Int): Mat = {
     init(r, c, (i: Int, j: Int) => v_dotp(row(a, i), col(b, j)).sum)
   }
-
-  def reduce(v: Seq[Double], m: Mat): Seq[Double] = {
-    for (i <- 0 until v.length) yield v_dotp(v, col(m, i)).sum
+  def compose(tr: List[Mat]): Mat = tr match {
+    case Nil => init(4, 4, ((i, j) => if (i == j) {1} else {0}))
+    case t::l => l.foldLeft(t){(acc, m) => dotp(acc, m, 4, 4)}
+  }
+  def reduce(m: Mat, v: Seq[Double]): Seq[Double] = {
+    for (r <- m) yield v_dotp(r, v).sum
   }
 
   def sin(rot: Double): Double = Math.sin(Math.toRadians(rot))
   def cos(rot: Double): Double = Math.cos(Math.toRadians(rot))
-
+  def trans(dx: Double, dy: Double, dz: Double): Mat = {
+    Seq(
+      Seq(1d, 0d, 0d, dx),
+      Seq(0d, 1d, 0d, dy),
+      Seq(0d, 0d, 1d, dz),
+      Seq(0d, 0d, 0d, 1d))
+  }
   def rotx(rx: Double): Mat = {
     Seq(
-      Seq(1d, 0d,      0d,           0d),
-      Seq(0d, cos(rx), -1 * sin(rx), 0d),
-      Seq(0d, sin(rx), cos(rx),      0d),
-      Seq(0d, 0d,      0d,           1d))
+      Seq(1d, 0d,      0d,         0d),
+      Seq(0d, cos(rx), -1*sin(rx), 0d),
+      Seq(0d, sin(rx), cos(rx),    0d),
+      Seq(0d, 0d,      0d,         1d))
+  }
+  def roty(ry: Double): Mat = {
+    Seq(
+      Seq(cos(ry),    0d, sin(ry), 0d),
+      Seq(0d,         1d, 0d,      0d),
+      Seq(-1*sin(ry), 0d, cos(ry), 0d),
+      Seq(0d,         0d, 0d,      1d))
+  }
+  def rotz(rz: Double): Mat = {
+    Seq(
+      Seq(cos(rz), -1*sin(rz), 0d, 0d),
+      Seq(sin(rz), cos(rz),    0d, 0d),
+      Seq(0d,      0d,         1d, 0d),
+      Seq(0d,      0d,         0d, 1d))
+  }
+  def view(rz: Double, dx: Double, dz: Double): Mat = {
+    Seq(
+      Seq(cos(rz), -1*sin(rz), 0d, dx),
+      Seq(sin(rz), cos(rz),    0d, 0d),
+      Seq(0d,      0d,         1d, dz),
+      Seq(0d,      0d,         0d, 1d))
   }
 
   val ex_a = Seq(
