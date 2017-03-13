@@ -50,7 +50,7 @@ object PromotionApp extends JSApp {
   }
   @JSExport
   def drawSanten(cnv: html.Canvas, shp: html.TextArea, trs: html.TextArea): Unit = {
-    val q = List("A", "B", "C", "D", "E")
+    val q = List("A", "B", "C", "D")
     val p = new P3D
     val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]; ctx.scale(0.5, -0.5); ctx.translate(0, -cnv.height)
     val cl = new Clock(100)

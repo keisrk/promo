@@ -91,6 +91,9 @@ class P3D extends Prelude {
         case (Some(s), d) => (c.get("id").asInstanceOf[Option[String]], p_load(s, d))
         case _ => sys.error("""c.get("seq") returns None""")
       }
+      case Some("cmp") => c.get("data") match {
+        case Some(d) => (c.get("id").asInstanceOf[Option[String]], Compose(s_load(d.asInstanceOf[Array[Dictionary[Dynamic]]]).map{case (id, sh) => sh}))
+        case _ => sys.error("""c.get("data") returns None""")}
     }}.toList
   }
 
