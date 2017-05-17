@@ -1,8 +1,5 @@
 package promotion.matrix
 
-import scala.scalajs.js.{Array, Dynamic, JSON}
-import scala.scalajs.js.Dictionary
-
 object DblMat {
   type Mat = Seq[Seq[Double]]
   def row(m: Mat, i: Int): Seq[Double] = m(i)
