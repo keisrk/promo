@@ -1,10 +1,10 @@
-package promotion.jsio3d
+package sketch.jsio3d
 
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 import scala.scalajs.js.{Array, Dynamic, JSON}
 import scala.scalajs.js.Dictionary
-import promotion.matrix.{DblMat}
-import promotion.wireframemodel.{P3D}
+import sketch.matrix.{DblMat}
+import sketch.wireframemodel.{P3D}
 
 class JSIO3D extends P3D {
   def draw(ctx: Ctx2D, es: List[Edge], v: View): Unit = {
@@ -69,7 +69,7 @@ class JSIO3D extends P3D {
     case "rz" => Rz(o, d)
     case _ => Rx(0d, 0d)
   }
-  def tr_load(src: Dictionary[Dynamic]): (String, Point, List[Trans]) = {
+  def ss_load_trans(src: Dictionary[Dynamic]): (String, Point, List[Trans]) = {
     val tr = src.asInstanceOf[Dictionary[Dynamic]]
     val n = tr.get("id").asInstanceOf[Option[String]] match {case None => "None"; case Some(n) => n}
     val o: Point = tr.get("off").asInstanceOf[Option[Array[Double]]] match {case None => (0, 0, 0); case Some(a) => (a(0), a(1), a(2))}
@@ -81,22 +81,22 @@ class JSIO3D extends P3D {
     (n, o, ms)
   }
 
-  def load_trs(s: String): Dictionary[(Point, List[Trans])] = {
+  def load_trans(s: String): Dictionary[(Point, List[Trans])] = {
     val j = JSON.parse(s).asInstanceOf[Array[Dictionary[Dynamic]]]
-    s_load_trs(j)
+    s_load_trans(j)
   }
-  def s_load_trs(j: Array[Dictionary[Dynamic]]): Dictionary[(Point, List[Trans])] = {
-    val l: List[(String, Point, List[Trans])] = j.map {c => tr_load(c)}.toList
+  def s_load_trans(j: Array[Dictionary[Dynamic]]): Dictionary[(Point, List[Trans])] = {
+    val l: List[(String, Point, List[Trans])] = j.map {c => ss_load_trans(c)}.toList
     Dictionary(l.map{case (id, p, tr) => (id -> (p, tr))}: _*)
   }
-  def mashup(shp: Shape, trs: Dictionary[(Point, List[Trans])], st8: String, i: Double): List[Edge] = shp match {
-    case base@(Vec(_, _, _)|Poly(_, _, _)) => trs.get(st8 + "-" + showId(base)) match {
+  def mashup(shp: Shape, trans: Dictionary[(Point, List[Trans])], st8: String, i: Double): List[Edge] = shp match {
+    case base@(Vec(_, _, _)|Poly(_, _, _)) => trans.get(st8 + "-" + showId(base)) match {
       case Some((p, tr)) => reduce(toEdge(offset(p, base)), toMatrix(tr, i))
       case None => reduce(toEdge(base), DblMat.init(4, 4, ((i, j) => if (i == j) {1} else {0})))
     }
-    case Compose(id, l) => trs.get(st8 + "-" + showId(Compose(id, l))) match {
-      case Some((p, tr)) => reduce(addEl(p, l.foldLeft(List[Edge]()){ case (acc, indc) => mashup(indc, trs, st8, i):::acc}), toMatrix(tr, i))
-      case None => l.foldLeft(List[Edge]()){ case (acc, indc) => mashup(indc, trs, st8, i):::acc}
+    case Compose(id, l) => trans.get(st8 + "-" + showId(Compose(id, l))) match {
+      case Some((p, tr)) => reduce(addEl(p, l.foldLeft(List[Edge]()){ case (acc, indc) => mashup(indc, trans, st8, i):::acc}), toMatrix(tr, i))
+      case None => l.foldLeft(List[Edge]()){ case (acc, indc) => mashup(indc, trans, st8, i):::acc}
     }
   }
 }

@@ -1,4 +1,4 @@
-package promotion.matrix
+package sketch.matrix
 
 object DblMat {
   type Mat = Seq[Seq[Double]]

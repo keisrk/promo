@@ -1,6 +1,6 @@
-package promotion.wireframemodel
+package sketch.wireframemodel
 
-import promotion.matrix.{DblMat}
+import sketch.matrix.{DblMat}
 
 trait Prelude {
   type View
@@ -32,7 +32,16 @@ trait Prelude {
   def dump(p: Point, v: View): (Double, Double)
   def toEdge(s: Shape): List[Edge]
   def reduce(el: List[Edge], m: DblMat.Mat): List[Edge]
-  def toMatrix(trs: List[Trans], i: Double): DblMat.Mat 
+  def toMatrix(trans: List[Trans], i: Double): DblMat.Mat 
+}
+
+trait Draw {
+  type Canvas
+  type Context
+  val canvas: Canvas
+  def getContext(cnv: Canvas): Context
+  def moveTo(ctx: Context): Unit
+  def lineTo(ctx: Context): Unit
 }
 
 class P2D extends Prelude {
@@ -48,7 +57,7 @@ class P2D extends Prelude {
     case Compose(id, l) => l.foldLeft(List[Edge]()){(acc, e) => acc ++ toEdge(e)}
     case _ => List(List())
   }
-  def toMatrix(trs: List[Trans], i: Double): DblMat.Mat = {//Not yet implemented
+  def toMatrix(trans: List[Trans], i: Double): DblMat.Mat = {//Not yet implemented
     DblMat.init(3, 3, ((i, j) => if (i == j) {1} else {0}))
   }
   def reduce(el: List[Edge], m: DblMat.Mat): List[Edge] = {el}
@@ -61,9 +70,9 @@ class P3D extends Prelude {
   type View = (Double, Double, Double)
   type Point = (Double, Double, Double)
 
-  def toMatrix(trs: List[Trans], i: Double): DblMat.Mat = {
+  def toMatrix(trans: List[Trans], i: Double): DblMat.Mat = {
     val init = DblMat.init(4, 4, ((i, j) => if (i == j) {1} else {0}))
-    trs.foldLeft(init){(acc, tr) => tr match {
+    trans.foldLeft(init){(acc, tr) => tr match {
       case Tr(o, d) => val (dx, dy, dz) = inter(o, d, i); DblMat.dotp(acc, DblMat.trans(dx, dy, dz), 4, 4)
       case Rx(o, d) => DblMat.dotp(acc, DblMat.rotx(o + (d - o) * i), 4, 4)
       case Ry(o, d) => DblMat.dotp(acc, DblMat.roty(o + (d - o) * i), 4, 4)

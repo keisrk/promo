@@ -1,4 +1,4 @@
-package promotion.animation
+package sketch.animation
 
 class Clock(val m: Int, val st8: List[String]) {
   var index = 0
