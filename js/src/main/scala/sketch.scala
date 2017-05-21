@@ -14,7 +14,7 @@ import sketch.jsio3d.{JSIO3D}
 
 object SketchApp extends JSApp {
   @JSExport
-  def drawSanten(cnv: html.Canvas, shp: html.TextArea, trans: html.TextArea): Unit = {
+  def draw(cnv: html.Canvas, shp: html.TextArea, trans: html.TextArea): Unit = {
     val q = List("A", "B", "C", "D")
     val p = new JSIO3D
     val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]; ctx.scale(1, -1); ctx.translate(cnv.width / 2, -cnv.height)

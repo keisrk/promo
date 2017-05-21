@@ -1,12 +1,25 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>The Sketchtion</title>
-  </head>
-  <body>
-    <canvas id="canvas01" width="1600" height="900"></canvas>
-    <p><textarea id="shape_val" cols="100" rows="8">
+package stetch.sketchtool
+
+import scalafx.Includes._
+import scalafx.application.JFXApp
+import scalafx.animation.AnimationTimer
+import scalafx.scene.image.{Image}
+import scalafx.scene.layout.{BorderPane}
+import scalafx.scene.{Scene}
+import scalafx.scene.canvas.{Canvas}
+
+import sketch.fxio3d.{FxIO3D}
+import sketch.animation.Clock
+/*
+class Interval extends AnimationTimer {
+  override def handle(now: Long): Unit = {
+    println("animation timer")
+  }
+}
+*/
+object Test {
+val j_sh =
+"""
 [
     {"id": "v0", "shape": "vec", "data": [[0, 200, 0], [110, 180, 90]]},
     {"id": "v1", "shape": "vec", "data": [[320, 200, 0], [110, 180, 90]]},
@@ -23,8 +36,9 @@
                               {"shape": "vec", "data": [[500,380,0], [24, 50, 24]]},
                               {"shape": "vec", "data": [[660,380,0], [24, 50, 24]]}]}
 ]
-    </textarea></p>
-    <p><textarea id="trans_val" cols="100" rows="8">
+"""
+val j_tr =
+"""
 [
     {"id": "A-v0", "tr": [[666, 0, 0], [506, 0, 0]]},
     {"id": "B-v0", "tr": [[506, 0, 0], [506, 0, 0]]},
@@ -56,12 +70,40 @@
     {"id": "C-cd", "tr": [[0, -50, 0], [0, -50, 0]]},
     {"id": "D-cd", "tr": [[0, -50, 0], [0,   0, 0]]}
 ]
-    </textarea></p>
-    <!-- Include Scala.js compiled code -->
-    <script type="text/javascript" src="./js/target/scala-2.11/sketch-fastopt.js"></script>
-    <!-- Run tutorial.webapp.TutorialApp -->
-    <script type="text/javascript">
-      sketch.SketchApp().draw(document.getElementById('canvas01'), document.getElementById('shape_val'), document.getElementById('trans_val'));
-    </script>
-  </body>
-</html>
+"""
+}
+
+object Main extends JFXApp {
+  def draw(cnv: Canvas,  shape: String, trans: String): Unit = {
+    val q = List("A", "B", "C", "D")
+    val p = new FxIO3D
+    val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(cnv.width.toDouble / 2, -cnv.height.toDouble)
+    val cl = new Clock(100, q)
+    val j_sh = p.load(shape)
+    val j_tr = p.load_trans(trans)
+    val es = p.mashup(j_sh, j_tr, cl.state(), 1d)
+    p.draw(ctx, es, (0d, 0d, 0d))   
+    val timer = AnimationTimer(t => {
+      ctx.clearRect(- cnv.width.toDouble / 2, 0, cnv.width.toDouble, cnv.height.toDouble)
+      cl.incl(1d)
+      val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
+      p.draw(ctx, es, (0d, 0d, 0d))
+    })
+    timer.start()
+  }
+  val icon = new Image(getClass.getResourceAsStream("/images/logo.png"))
+  stage = new JFXApp.PrimaryStage {
+    title.value = "Sketch Tool"
+    icons += icon
+    //height = maxHeight
+    //height = 
+  }
+  val bord = new BorderPane {
+    val cnv = new Canvas(1600, 700)
+    draw(cnv, Test.j_sh, Test.j_tr)
+    center = cnv
+  }
+  stage.scene = new Scene{
+    root = bord
+  }
+}

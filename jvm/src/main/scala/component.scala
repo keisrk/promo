@@ -1,4 +1,4 @@
-package promotion.component
+package sketch.component
 import scala.xml.{Elem}
 //import scalafx.Includes._
 
@@ -7,7 +7,7 @@ import scalafx.beans.property.{
   DoubleProperty => DoubleP,
   StringProperty => StringP}
 
-import promotion.wireframemodel.{P3D}
+import sketch.wireframemodel.{P3D}
 
 abstract class Component 
 case class Conveyor(name: StringP, x: DoubleP, y: DoubleP, width: DoubleP,
