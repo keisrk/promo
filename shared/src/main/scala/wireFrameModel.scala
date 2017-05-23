@@ -1,7 +1,6 @@
 package sketch.wireframemodel
 
 import sketch.matrix.{DblMat}
-
 trait Prelude {
   type View
   type Point
@@ -28,23 +27,32 @@ trait Prelude {
     case Poly(id, s, d) => Poly(id, s.map( o => add(o, p)), d)
     case Compose(id, l) => Compose(id, l.map( t => offset(p, t)))
   }
-  //def load(s: String): Shape
-  def dump(p: Point, v: View): (Double, Double)
   def toEdge(s: Shape): List[Edge]
   def reduce(el: List[Edge], m: DblMat.Mat): List[Edge]
   def toMatrix(trans: List[Trans], i: Double): DblMat.Mat 
+  def dump(p: Point, v: View): (Double, Double)
+  def moveTo(x: Double, y: Double): Unit 
+  def lineTo(x: Double, y: Double): Unit     
+  def beginPath(): Unit
+  def strokePath(): Unit
+  def draw(es: List[Edge], v: View): Unit = {
+    beginPath()
+    for (e <- es) {
+      e match {
+        case Nil => {}
+        case p::tl => {
+          ((tp: (Double, Double))=> moveTo(tp._1, tp._2))(dump(p, v))
+          for (q <- tl) {
+            ((tp: (Double, Double))=> lineTo(tp._1, tp._2))(dump(q, v))
+          }
+        }
+      }
+    }
+    strokePath()
+  }
 }
 
-trait Draw {
-  type Canvas
-  type Context
-  val canvas: Canvas
-  def getContext(cnv: Canvas): Context
-  def moveTo(ctx: Context): Unit
-  def lineTo(ctx: Context): Unit
-}
-
-class P2D extends Prelude {
+abstract class P2D extends Prelude {
   type View = (Double, Double, Double)
   type Point = (Double, Double)
   def dump(x: Point, v: View): (Double, Double) = x
@@ -66,7 +74,7 @@ class P2D extends Prelude {
   }
 }
 
-class P3D extends Prelude {
+abstract class P3D extends Prelude {
   type View = (Double, Double, Double)
   type Point = (Double, Double, Double)
 

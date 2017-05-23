@@ -4,25 +4,16 @@ import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
 import scala.scalajs.js.{Array, Dynamic, JSON}
 import scala.scalajs.js.Dictionary
 import sketch.matrix.{DblMat}
-import sketch.wireframemodel.{P3D}
+import sketch.wireframemodel.{Prelude, P3D}
 
-class JSIO3D extends P3D {
-  def draw(ctx: Ctx2D, es: List[Edge], v: View): Unit = {
-    ctx.beginPath()
-    for (e <- es) {
-      e match {
-        case Nil => {}
-	case p::tl => {
-          ((tp: (Double, Double))=> ctx.moveTo(tp._1, tp._2))(dump(p, v))
-	  for (q <- tl) {
-          ((tp: (Double, Double))=> ctx.lineTo(tp._1, tp._2))(dump(q, v))
-	  }
-	}
-      }
-    }
-    ctx.stroke()
-  }
-  def v_load(id: Option[String], s: Dynamic): Shape = if (s.isInstanceOf[Array[Array[Double]]]){
+abstract class JSOut(ctx: Ctx2D) extends P3D with Prelude{
+  def moveTo(x: Double, y: Double): Unit = ctx.moveTo(x, y)
+  def lineTo(x: Double, y: Double): Unit = ctx.lineTo(x, y)
+  def beginPath(): Unit = ctx.beginPath()
+  def strokePath(): Unit = ctx.stroke()
+}
+class JSIO3D(ctx: Ctx2D) extends JSOut(ctx: Ctx2D) {
+ def v_load(id: Option[String], s: Dynamic): Shape = if (s.isInstanceOf[Array[Array[Double]]]){
     val d = for (e <- s.asInstanceOf[Array[Array[Double]]]) yield (e(0), e(1), e(2))
       Vec(id, d(0), d(1))
   }else{

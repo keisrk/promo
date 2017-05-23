@@ -76,18 +76,18 @@ val j_tr =
 object Main extends JFXApp {
   def draw(cnv: Canvas,  shape: String, trans: String): Unit = {
     val q = List("A", "B", "C", "D")
-    val p = new FxIO3D
     val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(cnv.width.toDouble / 2, -cnv.height.toDouble)
+    val p = new FxIO3D(ctx)
     val cl = new Clock(100, q)
     val j_sh = p.load(shape)
     val j_tr = p.load_trans(trans)
     val es = p.mashup(j_sh, j_tr, cl.state(), 1d)
-    p.draw(ctx, es, (0d, 0d, 0d))   
+    p.draw(/*ctx,*/ es, (0d, 0d, 0d))   
     val timer = AnimationTimer(t => {
       ctx.clearRect(- cnv.width.toDouble / 2, 0, cnv.width.toDouble, cnv.height.toDouble)
       cl.incl(1d)
       val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
-      p.draw(ctx, es, (0d, 0d, 0d))
+      p.draw(/*ctx,*/ es, (0d, 0d, 0d))
     })
     timer.start()
   }

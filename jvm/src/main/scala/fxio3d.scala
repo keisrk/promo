@@ -1,27 +1,18 @@
 package sketch.fxio3d
 
 import sketch.matrix.{DblMat}
-import sketch.wireframemodel.{P3D}
+import sketch.wireframemodel.{P3D, Prelude}
 
 import scalafx.scene.canvas.{GraphicsContext => Ctx2D}
 import scala.util.parsing.json.JSON
 
-class FxIO3D extends P3D {
-  def draw(ctx: Ctx2D, es: List[Edge], v: View): Unit = {
-    ctx.beginPath()
-    for (e <- es) {
-      e match {
-        case Nil => {}
-	case p::tl => {
-          ((tp: (Double, Double))=> ctx.moveTo(tp._1, tp._2))(dump(p, v))
-	  for (q <- tl) {
-          ((tp: (Double, Double))=> ctx.lineTo(tp._1, tp._2))(dump(q, v))
-	  }
-	}
-      }
-    }
-    ctx.strokePath()
-  }
+abstract class FxOut(ctx: Ctx2D) extends P3D with Prelude{
+  def moveTo(x: Double, y: Double): Unit = ctx.moveTo(x, y)
+  def lineTo(x: Double, y: Double): Unit = ctx.lineTo(x, y)
+  def beginPath(): Unit = ctx.beginPath()
+  def strokePath(): Unit = ctx.strokePath()
+}
+class FxIO3D(ctx: Ctx2D) extends FxOut(ctx: Ctx2D) { 
   def v_load(id: Option[String], s: Any): Shape = if (s.isInstanceOf[List[List[Double]]]){
     val d = for (e <- s.asInstanceOf[List[List[Double]]]) yield (e(0), e(1), e(2))
       Vec(id, d(0), d(1))

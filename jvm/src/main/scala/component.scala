@@ -7,28 +7,28 @@ import scalafx.beans.property.{
   DoubleProperty => DoubleP,
   StringProperty => StringP}
 
+import scalafx.scene.canvas.{GraphicsContext => Ctx2D}
 import sketch.wireframemodel.{P3D}
+import sketch.fxio3d.{FxOut}
 
-abstract class Component 
-case class Conveyor(name: StringP, x: DoubleP, y: DoubleP, width: DoubleP,
-  length0: DoubleP, length1: DoubleP,
-  theta: DoubleP, pitch: DoubleP) extends Component
-case class Sensor(name: StringP, x: DoubleP, y: DoubleP, time: DoubleP, state: BooleanP) extends Component {val nick = new StringP(this, "NickName", name.value)}
-case class Arm1(name: StringP, x: DoubleP, y: DoubleP,
-  length: DoubleP, theta: DoubleP) extends Component
-case class Arm2(name: StringP, x: DoubleP, y: DoubleP,
-  length0: DoubleP, theta0: DoubleP,
-  length1: DoubleP, theta1: DoubleP) extends Component
-case class Arm3(name: StringP, x: DoubleP, y: DoubleP,
-  length0: DoubleP, theta0: DoubleP,
-  length1: DoubleP, theta1: DoubleP,
-  length2: DoubleP, theta2: DoubleP) extends Component
-case class Work(name: StringP, x: DoubleP, y: DoubleP, width: DoubleP, height: DoubleP) extends Component
-case class BackGround(draw: List[DoubleP]) extends Component
+class Direction(xy: DoubleP, yz: DoubleP, zx: DoubleP)
+class Position(x: DoubleP, y: DoubleP, z: DoubleP)
+class Component(id: String, dir: Direction, pos: Position) {}
+class ComponentIO3D(ctx: Ctx2D) extends FxOut(ctx: Ctx2D){
+  def s_loadComponent(s: scala.xml.Node): (Component, Shape, List[Trans]) = {
+    val id = s.label
+    val x = DoubleP((s\ "x").text.toDouble)
+    val y = DoubleP((s\ "y").text.toDouble)
+    val z = DoubleP((s\ "z").text.toDouble)
+    val xy = DoubleP((s\ "xy").text.toDouble)
+    val yz = DoubleP((s\ "yz").text.toDouble)
+    val zx = DoubleP((s\ "zx").text.toDouble)
+    (new Component(id, new Direction(xy, yz, zx), new Position(x, y, z)), Vec(None, (0, 0, 0), (100, 100, 100)), List())
+  }
+  def loadComponent(s: Elem): List[(Component, Shape, List[Trans])] =
+    (s \ "component").head.child.map((elem: scala.xml.Node) => s_loadComponent(elem)).toList
 
-object  ComponentOp {
-
-    def s_loadComponent(s: scala.xml.Node): Component =
+/*    def s_loadComponent(s: scala.xml.Node): Component =
     s.label match {
       case "conveyor" => {
         val n = StringP((s\ "name").text)
@@ -88,9 +88,5 @@ object  ComponentOp {
         Work(n, s_x, s_y, w, h)
       }
       case _ => BackGround(List())
-    }
-
-  def loadComponent(s: Elem): List[Component] =
-    (s \ "component").head.child.map((elem: scala.xml.Node) => s_loadComponent(elem)).toList
-
+    }*/
 }
