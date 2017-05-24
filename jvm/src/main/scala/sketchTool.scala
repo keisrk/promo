@@ -7,6 +7,7 @@ import scalafx.scene.image.{Image}
 import scalafx.scene.layout.{BorderPane}
 import scalafx.scene.{Scene}
 import scalafx.scene.canvas.{Canvas}
+import scalafx.scene.layout.{VBox, HBox}
 
 import sketch.fxio3d.{FxIO3D}
 import sketch.animation.Clock
@@ -17,6 +18,8 @@ class Interval extends AnimationTimer {
   }
 }
 */
+class WindowMaker {
+}
 object Test {
 val j_sh =
 """
@@ -82,25 +85,44 @@ object Main extends JFXApp {
     val j_sh = p.load(shape)
     val j_tr = p.load_trans(trans)
     val es = p.mashup(j_sh, j_tr, cl.state(), 1d)
-    p.draw(/*ctx,*/ es, (0d, 0d, 0d))   
+    p.draw(es, (0d, 0d, 0d))   
     val timer = AnimationTimer(t => {
       ctx.clearRect(- cnv.width.toDouble / 2, 0, cnv.width.toDouble, cnv.height.toDouble)
       cl.incl(1d)
       val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
-      p.draw(/*ctx,*/ es, (0d, 0d, 0d))
+      p.draw(es, (0d, 0d, 0d))
     })
     timer.start()
   }
   val icon = new Image(getClass.getResourceAsStream("/images/logo.png"))
+
+  val raw0 = new HBox {
+    val cnv = new Canvas(300, 200)
+    spacing = 5
+    children = List(cnv)
+  }
+  val raw1 = new HBox {
+    val cnv = new Canvas(300, 200)
+    spacing = 5
+    children = List(cnv)
+  }
+  val raw2 = new HBox {
+    val cnv = new Canvas(300, 200)
+    spacing = 5
+    children = List(cnv)
+  }
+  val col = new VBox {
+    spacing = 5
+    children = List(raw0, raw1, raw2)
+  }
   stage = new JFXApp.PrimaryStage {
     title.value = "Sketch Tool"
     icons += icon
-    //height = maxHeight
-    //height = 
   }
   val bord = new BorderPane {
-    val cnv = new Canvas(1600, 700)
+    val cnv = new Canvas(200, 700)
     draw(cnv, Test.j_sh, Test.j_tr)
+    left = col
     center = cnv
   }
   stage.scene = new Scene{
