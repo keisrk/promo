@@ -1,6 +1,6 @@
 package sketch.component
 import scala.xml.{Elem}
-//import scalafx.Includes._
+import scalafx.Includes._
 
 import scalafx.beans.property.{
   BooleanProperty => BooleanP,
@@ -11,9 +11,9 @@ import scalafx.scene.canvas.{GraphicsContext => Ctx2D}
 import sketch.wireframemodel.{P3D}
 import sketch.fxio3d.{FxOut}
 
-class Direction(xy: DoubleP, yz: DoubleP, zx: DoubleP)
-class Position(x: DoubleP, y: DoubleP, z: DoubleP)
-class Component(id: String, dir: Direction, pos: Position) {}
+class Direction(_xy: DoubleP, _yz: DoubleP, _zx: DoubleP){val xy: DoubleP = _xy; val yz: DoubleP = _yz; val zx: DoubleP = _zx}
+class Position(_x: DoubleP, _y: DoubleP, _z: DoubleP){val x: DoubleP = _x; val y: DoubleP = _y; val z: DoubleP = _z}
+class Component(_id: String, _dir: Direction, _pos: Position){val id:String = _id; val dir: Direction = _dir; val pos: Position = _pos} 
 class ComponentIO3D(ctx: Ctx2D) extends FxOut(ctx: Ctx2D){
   def s_loadComponent(s: scala.xml.Node): (Component, Shape, List[Trans]) = {
     val id = s.label

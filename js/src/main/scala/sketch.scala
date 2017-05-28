@@ -3,7 +3,9 @@ package sketch
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
+import org.scalajs.dom.document
 import org.scalajs.dom.{CanvasRenderingContext2D => Ctx2D}
+import org.scalajs.dom.raw
 import org.scalajs.dom.raw.{Event}
 // import org.scalajs.dom.extensions._
 
@@ -11,6 +13,7 @@ import dom.html
 
 import sketch.animation.Clock
 import sketch.jsio3d.{JSIO3D}
+import sketch.svg.{SVG}
 
 object SketchApp extends JSApp {
   @JSExport
@@ -29,6 +32,14 @@ object SketchApp extends JSApp {
       j_tr = p.load_trans(trans.value)
     }   
     p.draw(/*ctx,*/ es, (0d, 0d, 0d))
+
+    //SVG things
+/*    val img = document.getElementById("svg01").asInstanceOf[raw.SVGSVGElement]
+    val svg = new SVG
+    for (s <- List(0,1,2,3)) {
+      svg.makeLabel(img, s, svg.data(s))
+    }*/
+
     dom.window.setInterval(() => {
       ctx.clearRect(- cnv.width / 2, 0, cnv.width, cnv.height)
       cl.incl(1d)

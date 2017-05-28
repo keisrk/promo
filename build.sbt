@@ -21,7 +21,13 @@ lazy val sketch = crossProject.in(file(".")).
     // Add JVM-specific settings here
     libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.102-R11",
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
-    libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
+    libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6",    
+
+    unmanagedJars in Compile += {
+      val ps = new sys.SystemProperties
+      val jh = ps("java.home")
+      Attributed.blank(file(jh) / "lib/ext/jfxrt.jar")
+    }
   ).
   jsSettings(
     // Add JS-specific settings here

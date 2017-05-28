@@ -2,6 +2,10 @@ package stetch.sketchtool
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
+import scalafx.beans.property.{
+  BooleanProperty => BooleanP,
+  DoubleProperty => DoubleP,
+  StringProperty => StringP}
 import scalafx.animation.AnimationTimer
 import scalafx.scene.image.{Image}
 import scalafx.scene.layout.{BorderPane}
@@ -11,6 +15,8 @@ import scalafx.scene.layout.{VBox, HBox}
 
 import sketch.fxio3d.{FxIO3D}
 import sketch.animation.Clock
+import sketch.windowMaker.WindowMaker
+import sketch.component.{Position, Direction}
 /*
 class Interval extends AnimationTimer {
   override def handle(now: Long): Unit = {
@@ -18,9 +24,26 @@ class Interval extends AnimationTimer {
   }
 }
 */
-class WindowMaker {
-}
+
 object Test {
+val test = List(
+  ("width", DoubleP(300d), 600), ("height", DoubleP(300d), 600), ("theta", DoubleP(60d), 360), ("duration", DoubleP(60d), 720), 
+  ("x", DoubleP(60d), 300), ("y", DoubleP(60d), 300), ("z", DoubleP(60d), 300))
+val j_shape = 
+"""
+[
+{"id": "v0", "shape": "vec", "data": [[-25, 5, 5], [25, 25, 25]]}
+]
+"""
+val j_trans =
+"""
+[
+    {"id": "A-v0", "tr": [[0, 0, 0], [15, 0, 0]]},
+    {"id": "B-v0", "tr": [[15, 0, 0], [0, 0, 0]]},
+    {"id": "C-v0", "tr": [[0, 0, 0], [0, 0, 0]], "rz": [0, 15]},
+    {"id": "D-v0", "tr": [[0, 0, 0], [0, 0, 0]], "rz": [15, 0]}
+]
+"""
 val j_sh =
 """
 [
@@ -95,34 +118,43 @@ object Main extends JFXApp {
     timer.start()
   }
   val icon = new Image(getClass.getResourceAsStream("/images/logo.png"))
-
+  /*
   val raw0 = new HBox {
-    val cnv = new Canvas(300, 200)
+    val cnv = new Canvas(20, 20)
     spacing = 5
     children = List(cnv)
   }
   val raw1 = new HBox {
-    val cnv = new Canvas(300, 200)
+    val cnv = new Canvas(20, 20)
     spacing = 5
     children = List(cnv)
   }
   val raw2 = new HBox {
-    val cnv = new Canvas(300, 200)
+    val cnv = new Canvas(20, 20)
     spacing = 5
     children = List(cnv)
-  }
-  val col = new VBox {
-    spacing = 5
-    children = List(raw0, raw1, raw2)
-  }
+  }*/
+  val cola = new VBox {
+    val cnv0 = new Canvas(100, 100); val cnv1 = new Canvas(100, 100); val cnv2 = new Canvas(100, 100)
+    val _id0 = "test"; val pos0 = new Position(DoubleP(100d), DoubleP(100d), DoubleP(100d)); val dir0 = new Direction(DoubleP(100d), DoubleP(100d), DoubleP(100d))
+    val _id1 = "test"; val pos1 = new Position(DoubleP(100d), DoubleP(100d), DoubleP(100d)); val dir1 = new Direction(DoubleP(100d), DoubleP(100d), DoubleP(100d))
+    val _id2 = "test"; val pos2 = new Position(DoubleP(100d), DoubleP(100d), DoubleP(100d)); val dir2 = new Direction(DoubleP(100d), DoubleP(100d), DoubleP(100d))
+    draw(cnv0, Test.j_shape, Test.j_trans); draw(cnv1, Test.j_shape, Test.j_trans); draw(cnv2, Test.j_shape, Test.j_trans)
+    val cntr0 = WindowMaker.makeCnvControl(_id0, dir0, pos0, cnv0)
+    val cntr1 = WindowMaker.makeCnvControl(_id1, dir1, pos1, cnv1)
+    val cntr2 = WindowMaker.makeCnvControl(_id2, dir2, pos2, cnv2)
+    spacing = 25
+    children = List(cntr0, cntr1, cntr2) }/*
+  val col = new VBox { children = for ((cp, v, maxv) <- Test.test) yield {WindowMaker.makeTFSlider(cp, v, maxv)}}
+  val colb = new VBox { children = for ((cp, v, maxv) <- Test.test) yield {WindowMaker.makeTFSlider(cp, v, maxv)}}*/
   stage = new JFXApp.PrimaryStage {
     title.value = "Sketch Tool"
     icons += icon
   }
   val bord = new BorderPane {
-    val cnv = new Canvas(200, 700)
+    val cnv = new Canvas(700, 700)
     draw(cnv, Test.j_sh, Test.j_tr)
-    left = col
+    left = cola
     center = cnv
   }
   stage.scene = new Scene{
