@@ -7,16 +7,20 @@ import scalafx.beans.property.{
   DoubleProperty => DoubleP,
   StringProperty => StringP}
 import scalafx.animation.AnimationTimer
+import scalafx.scene.paint.Color._
 import scalafx.scene.image.{Image}
-import scalafx.scene.layout.{BorderPane}
+import scalafx.scene.layout.{BorderPane, Pane}
+import scalafx.scene.SubScene
 import scalafx.scene.{Scene}
 import scalafx.scene.canvas.{Canvas}
 import scalafx.scene.layout.{VBox, HBox}
+import scalafx.scene.shape.{Shape, Rectangle}
 
 import sketch.fxio3d.{FxIO3D}
 import sketch.animation.Clock
 import sketch.windowMaker.WindowMaker
 import sketch.component.{Position, Direction}
+import sketch.svgFx.{SVGFx}
 /*
 class Interval extends AnimationTimer {
   override def handle(now: Long): Unit = {
@@ -151,11 +155,22 @@ object Main extends JFXApp {
     title.value = "Sketch Tool"
     icons += icon
   }
+  val svg = new SVGFx
+  val img = new SubScene(300, 300){
+    content = svg.test
+  }
+  svg.setColor(img, "redrect", List("redrect", "bluerect"))
+  //img.lookup("*").asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan
+/*  img.content.find((e: javafx.scene.Node) => {e.id.value == "redrect"}) match {
+    case None => {}
+    case Some(node) => node.asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan
+  }//lookup("*").asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan*/
   val bord = new BorderPane {
     val cnv = new Canvas(700, 700)
     draw(cnv, Test.j_sh, Test.j_tr)
     left = cola
     center = cnv
+    bottom = img
   }
   stage.scene = new Scene{
     root = bord
