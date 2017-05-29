@@ -156,15 +156,11 @@ object Main extends JFXApp {
     icons += icon
   }
   val svg = new SVGFx
-  val img = new SubScene(300, 300){
+  val img = new SubScene(700, 300){
     content = svg.test
   }
   svg.setColor(img, "redrect", List("redrect", "bluerect"))
-  //img.lookup("*").asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan
-/*  img.content.find((e: javafx.scene.Node) => {e.id.value == "redrect"}) match {
-    case None => {}
-    case Some(node) => node.asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan
-  }//lookup("*").asInstanceOf[javafx.scene.shape.Rectangle].fill = Cyan*/
+  svg.makeLabel(img, "some_id", "P&P 吸着破壊", 450, 100, 1)
   val bord = new BorderPane {
     val cnv = new Canvas(700, 700)
     draw(cnv, Test.j_sh, Test.j_tr)

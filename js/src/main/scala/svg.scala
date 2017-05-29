@@ -14,15 +14,6 @@ case class RoopBgn() extends Control
 case class RoopEnd() extends Control
 
 class SVG {
-  def setColor(img: svg.SVG, q: String, qs: List[String]): Unit = {
-    for (p <- qs) {
-      if (p == q){
-        img.getElementById(q).setAttribute("fill", "turquoise")
-      } else {
-        img.getElementById(p).setAttribute("fill", "white")
-      }
-    }
-  }
   def makeRect(id: String, x: Double, y: Double, w: Double, h: Double): svg.RectElement = {
     val rc = document.createElementNS("http://www.w3.org/2000/svg", "rect").asInstanceOf[raw.SVGRectElement]
     rc.id = id 
@@ -43,6 +34,8 @@ class SVG {
     i match {
       case 0 => {}
       case 1 => {
+        rc.x.baseVal.value -= 10
+        rc.width.baseVal.value += 20
         rc.rx.baseVal.value = h/2; rc.ry.baseVal.value = h/2}
       case 2 => {
         val rcL = document.createElementNS("http://www.w3.org/2000/svg", "rect").asInstanceOf[raw.SVGRectElement]
@@ -77,23 +70,92 @@ class SVG {
         rc.parentNode.replaceChild(p, rc)
         p.id = id
      }
+      case 4 => {
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val m2 = p.createSVGPathSegMovetoAbs(x, y)
+        p.pathSegList.initialize(m2) 
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-10, h/2))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(10, h/2))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(w -10, 0))
+        p.pathSegList.appendItem(p.createSVGPathSegArcRel(0, -h, h/2, h/2, 180, false, false))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(10 -w, 0))
+        p.setAttribute("stroke", "black")
+        p.setAttribute("fill", rc.getAttribute("fill"))
+        rc.parentNode.replaceChild(p, rc)
+        p.id = id
+      }
+      case 5 => {
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val m2 = p.createSVGPathSegMovetoAbs(x , y)
+        p.pathSegList.initialize(m2) 
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(w , 0))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, -h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-20, -10))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-w +40, 0))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-20, 10))
+        p.setAttribute("stroke", "black")
+        p.setAttribute("fill", rc.getAttribute("fill"))
+        rc.parentNode.replaceChild(p, rc)
+        p.id = id
+      }
+
+      case 6 => {
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val m2 = p.createSVGPathSegMovetoAbs(x , y)
+        p.pathSegList.initialize(m2) 
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(20, 10))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(w -40, 0))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(20, -10))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, -h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-w, 0))
+        p.setAttribute("stroke", "black")
+        p.setAttribute("fill", rc.getAttribute("fill"))
+        rc.parentNode.replaceChild(p, rc)
+        p.id = id
+      }
+
+      case 7 => {
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val m2 = p.createSVGPathSegMovetoAbs(x , y)
+        p.pathSegList.initialize(m2) 
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-20, h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(w +20, 0))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(20, -h))
+        p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-w-20, 0))
+        p.setAttribute("stroke", "black")
+        p.setAttribute("fill", rc.getAttribute("fill"))
+        rc.parentNode.replaceChild(p, rc)
+        p.id = id
+      }
     }
   }
   def makeLabel(root: svg.SVG, id: String, s: String, x: Double, y: Double, i: Int): Unit = {
-    val len = s.length * 20
-    val rc = makeRect(id, x - len/2, y - 20, len + 10, 40)
     val tx = document.createElementNS("http://www.w3.org/2000/svg", "text").asInstanceOf[raw.SVGTextElement]
-    val txt = document.createTextNode(s)
-    val svgx = root.createSVGLength(); svgx.value = x + 5 - len/2
-    val svgy = root.createSVGLength(); svgy.value = y + 27.5 - 20 
-    tx.x.baseVal.initialize(svgx)
-    tx.y.baseVal.initialize(svgy)
-    tx.textLength.baseVal.value = len
+    tx.textContent = s
     tx.setAttribute("font-size", "20px")
     tx.setAttribute("font-family", "Courier New")
-    tx.appendChild(txt)
-    root.appendChild(rc)
+    val svgx = root.createSVGLength(); svgx.value = x 
+    val svgy = root.createSVGLength(); svgy.value = y 
+    tx.x.baseVal.initialize(svgx)
+    tx.y.baseVal.initialize(svgy)
     root.appendChild(tx)
+    val w = tx.getBBox().width
+    val h = tx.getBBox().height
+    svgx.value = x - w/2; tx.x.baseVal.initialize(svgx)
+    svgy.value = y + h/2; tx.y.baseVal.initialize(svgy)
+    val rc = makeRect(id, x - w/2 -5, y - h, w + 10, h * 2)
+    root.insertBefore(rc, tx)
     decoRect(rc, i)
+  }
+  def setColor(img: svg.SVG, q: String, qs: List[String]): Unit = {
+    for (p <- qs) {
+      if (p == q){
+        img.getElementById(q).setAttribute("fill", "turquoise")
+      } else {
+        img.getElementById(p).setAttribute("fill", "white")
+      }
+    }
   }
 }
