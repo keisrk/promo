@@ -6,15 +6,12 @@ import scalafx.beans.property.{
   BooleanProperty => BooleanP,
   DoubleProperty => DoubleP,
   StringProperty => StringP}
-import scalafx.scene.shape.{Shape, Rectangle}
+import scalafx.scene.shape.{Shape, Rectangle, MoveTo, LineTo, ArcTo}
 import scalafx.scene.SubScene
 import scalafx.scene.text.{Text, TextAlignment, TextFlow, Font}
 import scalafx.scene.paint.Color._
 import scalafx.scene.layout.Pane
-// dom.raw.SVGTextElement.getBBox(): SVGRect
-// dom.raw.SVGRect.{x, y, width, height}
-// scene.text.Text.boundsInLocal: ReadOnlyObjectProperty[Bounds]
-// scalafx.geometry.Bounds.{minX, minY, width, height}
+
 class SVGFx {
   val test = List(
     new Rectangle {
@@ -57,7 +54,13 @@ class SVGFx {
         rc.x.update(x -10)
         rc.width.update(w +20)
         rc.arcWidth.value = h/2; rc.arcHeight.value = h/2}
-      case 2 => {}
+      case 2 => {
+        val rcL = Rectangle(10, h)
+        val rcR = Rectangle(10, h)
+        rcL.x.update(x - 10)
+        rcL.y.update(y)
+        rcL.setStroke(Black)
+      }
     }
   }
   def makeLabel(root: SubScene, id: String, s: String, xpos: Double, ypos: Double, i: Int): Unit = {
