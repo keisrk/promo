@@ -1,6 +1,6 @@
 package sketch.animation
 
-class Clock(val m: Int, val st8: List[String]) {
+class Clock(val m: Int, val st8: Int => String/*List[String]*/) {
   var index = 0
   var t = 0d
   def incl(x: Double) : Unit = {
@@ -13,6 +13,6 @@ class Clock(val m: Int, val st8: List[String]) {
   }
   def inter(): Double = t/m
   def state(): String = {
-    st8(index % st8.length)
+    st8(index /*% st8.length*/)
   }
 }

@@ -18,7 +18,8 @@ import sketch.svg.{SVG}
 object SketchApp extends JSApp {
   @JSExport
   def draw(cnv: html.Canvas, shp: html.TextArea, trans: html.TextArea): Unit = {
-    val q = List("A", "B", "C", "D")
+    val l = List("A", "B", "C", "D")
+    val q = (x: Int) => l(x % l.length)
     val ctx = cnv.getContext("2d").asInstanceOf[Ctx2D]; ctx.scale(1, -1); ctx.translate(cnv.width / 2, -cnv.height)
     val p = new JSIO3D(ctx)
     val cl = new Clock(100, q)
@@ -31,7 +32,7 @@ object SketchApp extends JSApp {
     trans.onchange = (e: Event) => {
       j_tr = p.load_trans(trans.value)
     }   
-    p.draw(/*ctx,*/ es, (0d, 0d, 0d))
+    p.draw(es, (0d, 0d, 0d))
 
     //SVG things
 /*    val img = document.getElementById("svg01").asInstanceOf[raw.SVGSVGElement]
@@ -44,7 +45,7 @@ object SketchApp extends JSApp {
       ctx.clearRect(- cnv.width / 2, 0, cnv.width, cnv.height)
       cl.incl(1d)
       val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
-      p.draw(/*ctx,*/ es, (0d, 0d, 0d))
+      p.draw(es, (0d, 0d, 0d))
     }, 20)
   }
   def main(): Unit = {}

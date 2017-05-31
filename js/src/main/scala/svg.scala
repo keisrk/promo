@@ -15,7 +15,8 @@ case class RoopEnd() extends Control
 
 class SVG {
   def makeRect(id: String, x: Double, y: Double, w: Double, h: Double): svg.RectElement = {
-    val rc = document.createElementNS("http://www.w3.org/2000/svg", "rect").asInstanceOf[raw.SVGRectElement]
+    val rc = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+      .asInstanceOf[raw.SVGRectElement]
     rc.id = id 
     rc.x.baseVal.value = x
     rc.y.baseVal.value = y
@@ -38,8 +39,10 @@ class SVG {
         rc.width.baseVal.value += 20
         rc.rx.baseVal.value = h/2; rc.ry.baseVal.value = h/2}
       case 2 => {
-        val rcL = document.createElementNS("http://www.w3.org/2000/svg", "rect").asInstanceOf[raw.SVGRectElement]
-        val rcR = document.createElementNS("http://www.w3.org/2000/svg", "rect").asInstanceOf[raw.SVGRectElement]
+        val rcL = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+          .asInstanceOf[raw.SVGRectElement]
+        val rcR = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+          .asInstanceOf[raw.SVGRectElement]
         rcL.x.baseVal.value = x - 10
         rcL.y.baseVal.value = y
         rcL.width.baseVal.value = 10 
@@ -58,7 +61,8 @@ class SVG {
         rc.width.baseVal.value += 20
       }
       case 3 => {
-        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path")
+          .asInstanceOf[raw.SVGPathElement]
         val m2 = p.createSVGPathSegMovetoAbs(x - w/2, y + h/2)
         p.pathSegList.initialize(m2) 
         p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(w, -h))
@@ -71,7 +75,8 @@ class SVG {
         p.id = id
      }
       case 4 => {
-        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path")
+          .asInstanceOf[raw.SVGPathElement]
         val m2 = p.createSVGPathSegMovetoAbs(x, y)
         p.pathSegList.initialize(m2) 
         p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-10, h/2))
@@ -85,7 +90,8 @@ class SVG {
         p.id = id
       }
       case 5 => {
-        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path")
+          .asInstanceOf[raw.SVGPathElement]
         val m2 = p.createSVGPathSegMovetoAbs(x , y)
         p.pathSegList.initialize(m2) 
         p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, h))
@@ -101,7 +107,8 @@ class SVG {
       }
 
       case 6 => {
-        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path")
+          .asInstanceOf[raw.SVGPathElement]
         val m2 = p.createSVGPathSegMovetoAbs(x , y)
         p.pathSegList.initialize(m2) 
         p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(0, h))
@@ -117,7 +124,8 @@ class SVG {
       }
 
       case 7 => {
-        val p = document.createElementNS("http://www.w3.org/2000/svg", "path").asInstanceOf[raw.SVGPathElement]
+        val p = document.createElementNS("http://www.w3.org/2000/svg", "path")
+          .asInstanceOf[raw.SVGPathElement]
         val m2 = p.createSVGPathSegMovetoAbs(x , y)
         p.pathSegList.initialize(m2) 
         p.pathSegList.appendItem(p.createSVGPathSegLinetoRel(-20, h))
@@ -132,7 +140,8 @@ class SVG {
     }
   }
   def makeLabel(root: svg.SVG, id: String, s: String, x: Double, y: Double, i: Int): Unit = {
-    val tx = document.createElementNS("http://www.w3.org/2000/svg", "text").asInstanceOf[raw.SVGTextElement]
+    val tx = document.createElementNS("http://www.w3.org/2000/svg", "text")
+      .asInstanceOf[raw.SVGTextElement]
     tx.textContent = s
     tx.setAttribute("font-size", "20px")
     tx.setAttribute("font-family", "Courier New")

@@ -21,13 +21,7 @@ import sketch.animation.Clock
 import sketch.windowMaker.WindowMaker
 import sketch.component.{Position, Direction}
 import sketch.svgFx.{SVGFx}
-/*
-class Interval extends AnimationTimer {
-  override def handle(now: Long): Unit = {
-    println("animation timer")
-  }
-}
-*/
+
 
 object Test {
 val test = List(
@@ -102,11 +96,34 @@ val j_tr =
 ]
 """
 }
-
+class ControlFlow(val init: String, val data: List[(String, String, Int)]) {
+  var present = init
+  var index = 0
+  val g = Map(data.map{case (q, p, lbl) => (q -> (p, lbl))}: _*)
+  val st8 = (x: Int) => if (x == index) { 
+    present
+  }else{ 
+    index = x
+    val p = present
+    present = g(present)._1
+    p
+  }
+}
 object Main extends JFXApp {
+  val cfg = List(("A", "B", 1), ("B", "C", 2), ("C", "D", 0), ("D", "A", 1))
+  val qs = new ControlFlow("A", cfg) 
+  val img = new SubScene(300, 700){
+  }
+  val svg = new SVGFx(img)
+  //img.content = svg.test
+  val lbl = List("製品到着","1St.開 & 2St.閉","姿勢制御","1St.閉 & 2St.開 ")
+  for ((s, i) <- lbl.zipWithIndex) cfg(i) match {
+    case (q, p, lbl) => svg.makeLabel(q, s, 150, (i+1) * 120, lbl)
+  }
   def draw(cnv: Canvas,  shape: String, trans: String): Unit = {
-    val q = List("A", "B", "C", "D")
-    val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(cnv.width.toDouble / 2, -cnv.height.toDouble)
+    val l = List("A", "B", "C", "D")
+    val q = qs.st8//(x: Int) => l(x % l.length)
+    val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(0/*- cnv.width.toDouble / 2*/, -cnv.height.toDouble)
     val p = new FxIO3D(ctx)
     val cl = new Clock(100, q)
     val j_sh = p.load(shape)
@@ -114,30 +131,16 @@ object Main extends JFXApp {
     val es = p.mashup(j_sh, j_tr, cl.state(), 1d)
     p.draw(es, (0d, 0d, 0d))   
     val timer = AnimationTimer(t => {
-      ctx.clearRect(- cnv.width.toDouble / 2, 0, cnv.width.toDouble, cnv.height.toDouble)
+      ctx.clearRect(/*- cnv.width.toDouble / 2*/0, 0, cnv.width.toDouble, cnv.height.toDouble)
       cl.incl(1d)
       val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
       p.draw(es, (0d, 0d, 0d))
+      svg.setColor(cl.state())
     })
     timer.start()
   }
   val icon = new Image(getClass.getResourceAsStream("/images/logo.png"))
   /*
-  val raw0 = new HBox {
-    val cnv = new Canvas(20, 20)
-    spacing = 5
-    children = List(cnv)
-  }
-  val raw1 = new HBox {
-    val cnv = new Canvas(20, 20)
-    spacing = 5
-    children = List(cnv)
-  }
-  val raw2 = new HBox {
-    val cnv = new Canvas(20, 20)
-    spacing = 5
-    children = List(cnv)
-  }*/
   val cola = new VBox {
     val cnv0 = new Canvas(100, 100); val cnv1 = new Canvas(100, 100); val cnv2 = new Canvas(100, 100)
     val _id0 = "test"; val pos0 = new Position(DoubleP(100d), DoubleP(100d), DoubleP(100d)); val dir0 = new Direction(DoubleP(100d), DoubleP(100d), DoubleP(100d))
@@ -148,25 +151,18 @@ object Main extends JFXApp {
     val cntr1 = WindowMaker.makeCnvControl(_id1, dir1, pos1, cnv1)
     val cntr2 = WindowMaker.makeCnvControl(_id2, dir2, pos2, cnv2)
     spacing = 25
-    children = List(cntr0, cntr1, cntr2) }/*
-  val col = new VBox { children = for ((cp, v, maxv) <- Test.test) yield {WindowMaker.makeTFSlider(cp, v, maxv)}}
-  val colb = new VBox { children = for ((cp, v, maxv) <- Test.test) yield {WindowMaker.makeTFSlider(cp, v, maxv)}}*/
+    children = List(cntr0, cntr1, cntr2) }*/
   stage = new JFXApp.PrimaryStage {
     title.value = "Sketch Tool"
     icons += icon
   }
-  val svg = new SVGFx
-  val img = new SubScene(700, 300){
-    content = svg.test
-  }
-  svg.setColor(img, "redrect", List("redrect", "bluerect"))
-  svg.makeLabel(img, "some_id", "P&P 吸着破壊", 450, 100, 1)
   val bord = new BorderPane {
-    val cnv = new Canvas(700, 700)
+    val cnv = new Canvas(1200, 500)
     draw(cnv, Test.j_sh, Test.j_tr)
-    left = cola
+    //left = cola
+    left = img
     center = cnv
-    bottom = img
+    //bottom = img
   }
   stage.scene = new Scene{
     root = bord

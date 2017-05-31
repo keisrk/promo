@@ -6,13 +6,13 @@ import scalafx.beans.property.{
   BooleanProperty => BooleanP,
   DoubleProperty => DoubleP,
   StringProperty => StringP}
-import scalafx.scene.shape.{Shape, Rectangle, MoveTo, LineTo, ArcTo}
+import scalafx.scene.shape.{Shape, Rectangle, MoveTo, LineTo, ArcTo, Path}
 import scalafx.scene.SubScene
 import scalafx.scene.text.{Text, TextAlignment, TextFlow, Font}
 import scalafx.scene.paint.Color._
 import scalafx.scene.layout.Pane
 
-class SVGFx {
+class SVGFx(img: SubScene){ 
   val test = List(
     new Rectangle {
       id = "redrect"
@@ -43,27 +43,86 @@ class SVGFx {
     }
   }
   def decoRect(rc: Rectangle, i: Int): Unit = {
-    val id = rc.id.value
-    val x = rc.x.value 
-    val y = rc.y.value 
+    val id_s = rc.id.value
+    val xpos = rc.x.value 
+    val ypos = rc.y.value 
     val w = rc.width.value 
     val h = rc.height.value
     i match {
       case 0 => {}
       case 1 => {
-        rc.x.update(x -10)
+        rc.x.update(xpos -10)
         rc.width.update(w +20)
         rc.arcWidth.value = h/2; rc.arcHeight.value = h/2}
       case 2 => {
-        val rcL = Rectangle(10, h)
-        val rcR = Rectangle(10, h)
-        rcL.x.update(x - 10)
-        rcL.y.update(y)
-        rcL.setStroke(Black)
+       val es = List(
+          new MoveTo{x = xpos; y = ypos},
+          new LineTo{absolute = false; x = 0; y = h},
+          new MoveTo{x = xpos +w; y = ypos},
+          new LineTo{absolute = false; x = 0; y = h})
+       val p = new Path{
+          stroke = Black 
+          elements = es
+        }
+        img.content += p
+        rc.x.update(xpos -10)
+        rc.width.update(w +20)
+      }
+      case 3 => {
+        val es = List(
+          new MoveTo{x = xpos - w/2; y = ypos + h/2},
+          new LineTo{absolute = false; x = w; y = -h},
+          new LineTo{absolute = false; x = w; y = h},
+          new LineTo{absolute = false; x = -w; y = h},
+          new LineTo{absolute = false; x = -w; y = -h}
+        )
+        val p = new Path{
+          id = id_s
+          stroke = Black 
+          fill = rc.fill.value
+          elements = es
+        }
+        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
+      }
+      case 4 => {
+         val es = List(
+          new MoveTo{x = xpos; y = ypos},
+          new LineTo{absolute = false; x = -10; y = h/2},
+          new LineTo{absolute = false; x = 10; y = h/2},
+          new LineTo{absolute = false; x = w -10; y = 0},
+          new ArcTo{ absolute = false; x = 0; y = -h 
+          radiusX = h/2; radiusY = h/2; XAxisRotation = 180},
+          new LineTo{absolute = false; x = 10 -w; y = 0}
+        )
+        val p = new Path{
+          id = id_s
+          stroke = Black 
+          fill = rc.fill.value
+          elements = es
+        }
+        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
+      }
+      case 5 => {
+        val es = List(
+          new MoveTo{x = xpos; y = ypos},
+          new LineTo{absolute = false; x = 0; y = h},
+          new LineTo{absolute = false; x = w; y = 0},
+          new LineTo{absolute = false; x = 0; y = -h},
+          new LineTo{absolute = false; x = -20; y = -10},
+          new LineTo{absolute = false; x = -w +40; y = 0},
+          new LineTo{absolute = false; x = -20; y = 10}
+        )
+        val p = new Path{
+          id = id_s
+          stroke = Black 
+          fill = rc.fill.value
+          elements = es
+        }
+        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
       }
     }
   }
-  def makeLabel(root: SubScene, id: String, s: String, xpos: Double, ypos: Double, i: Int): Unit = {
+  def makeLabel(id: String, s: String, xpos: Double, ypos: Double, i: Int): Unit = {
     val tx = new Text(xpos, ypos, s) {
       font = Font("Courier New", 20)
     }
@@ -74,17 +133,18 @@ class SVGFx {
     tx.x = minX - w / 2
     tx.y = minY + h
     val rc = makeRect(id, minX - w / 2 -5, ypos - h, w + 10, 2 * h)
-    root.content += rc
-    root.content += tx
+    img.content += rc
+    img.content += tx
     decoRect(rc, i)
   }
-  def setColor(img: SubScene, q: String, qs: List[String]): Unit = {
-    for (e <- img.content) {
-      if (e.id.value == q){
-        e.asInstanceOf[javafx.scene.shape.Rectangle].fill = Turquoise
-      } else {
-        e.asInstanceOf[javafx.scene.shape.Rectangle].fill = White
-      }
+  def setColor(q: String): Unit = {
+    for (e <- img.content) e match {
+      case sh:javafx.scene.shape.Rectangle if e.id.value == q => sh.fill = Turquoise
+      case sh:javafx.scene.shape.Path if e.id.value == q => sh.fill = Turquoise
+      case sh:javafx.scene.shape.Rectangle if sh.fill == Transparent => {}
+      case sh:javafx.scene.shape.Rectangle => sh.fill = White 
+      case sh:javafx.scene.shape.Path => sh.fill = White 
+      case _ => {}
     }
   }
 }
