@@ -19,6 +19,7 @@ import scalafx.scene.shape.{Shape, Rectangle}
 import sketch.fxio3d.{FxIO3D}
 import sketch.animation.Clock
 import sketch.windowMaker.WindowMaker
+import sketch.controlFlowGraph.{ControlFlowGraph}
 import sketch.component.{Position, Direction}
 import sketch.svgFx.{SVGFx}
 
@@ -96,22 +97,10 @@ val j_tr =
 ]
 """
 }
-class ControlFlow(val init: String, val data: List[(String, String, Int)]) {
-  var present = init
-  var index = 0
-  val g = Map(data.map{case (q, p, lbl) => (q -> (p, lbl))}: _*)
-  val st8 = (x: Int) => if (x == index) { 
-    present
-  }else{ 
-    index = x
-    val p = present
-    present = g(present)._1
-    p
-  }
-}
+
 object Main extends JFXApp {
   val cfg = List(("A", "B", 1), ("B", "C", 2), ("C", "D", 0), ("D", "A", 1))
-  val qs = new ControlFlow("A", cfg) 
+  val qs = new ControlFlowGraph("A", cfg) 
   val img = new SubScene(300, 700){
   }
   val svg = new SVGFx(img)

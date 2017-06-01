@@ -12,6 +12,8 @@ import scalafx.scene.text.{Text, TextAlignment, TextFlow, Font}
 import scalafx.scene.paint.Color._
 import scalafx.scene.layout.Pane
 
+import sketch.controlFlowGraph.{ControlFlowGraph}
+
 class SVGFx(img: SubScene){ 
   val test = List(
     new Rectangle {
@@ -146,6 +148,23 @@ class SVGFx(img: SubScene){
       case sh:javafx.scene.shape.Path => sh.fill = White 
       case _ => {}
     }
+  }
+  def lookup(q: String): Option[Shape] = {
+    img.content.find( (e :javafx.scene.Node) => e match {
+      case sh:javafx.scene.shape.Shape => sh.id.value == q
+      case _ => false
+    }) match {
+      case Some(shape) => Some(shape.asInstanceOf[javafx.scene.shape.Shape])
+      case None => None
+    }
+  }
+  def connect(cfg: ControlFlowGraph): Path = {
+    for ((q, p, i) <- cfg.data) yield {
+      val q_ = lookup(q) match {
+      }
+    }
+    //for (e <- img.content) e match {}
+
   }
 }
 
