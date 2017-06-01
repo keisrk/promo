@@ -99,16 +99,19 @@ val j_tr =
 }
 
 object Main extends JFXApp {
-  val fc = List(("A", "B", 1), ("B", "C", 2), ("C", "D", 0), ("D", "A", 1))
+  val fc = List(("A", "B", 0), ("B", "C", 0), ("C", "D", 0), ("D", "A", 0))
   val qs = new FlowChart("A", fc) 
-  val img = new SubScene(300, 700){
+  val img = new SubScene(700, 700){
   }
   val svg = new SVGFx(img)
-  //img.content = svg.test
-  val lbl = List("製品到着","1St.開 & 2St.閉","姿勢制御","1St.閉 & 2St.開 ")
-  for ((s, i) <- lbl.zipWithIndex) fc(i) match {
-    case (q, p, lbl) => svg.makeLabel(q, s, 150, (i+1) * 120, lbl)
-  }
+  val v = svg.arrange(List(
+    List(("A", "製品到着", 0),("B", "1St.開 & 2St.閉", 1),("C","姿勢制御", 2), ("D", "センサON", 3)),
+    List(("NA", "", 0),       ("Cf", "検査NG", 3), ("E", "非常停止", 4))
+  ), 200, 120)
+  val e = List(("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"), ("B", "Cf"), ("Cf", "E"))
+  val lbl = List("製品到着","1St.開 & 2St.閉","姿勢制御","1St.閉 & 2St.開")
+  svg.draw(v, e)
+
   def draw(cnv: Canvas,  shape: String, trans: String): Unit = {
     val l = List("A", "B", "C", "D")
     val q = qs.st8//(x: Int) => l(x % l.length)
@@ -151,7 +154,6 @@ object Main extends JFXApp {
     //left = cola
     left = img
     center = cnv
-    //bottom = img
   }
   stage.scene = new Scene{
     root = bord
