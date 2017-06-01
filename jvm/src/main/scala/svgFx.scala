@@ -6,13 +6,13 @@ import scalafx.beans.property.{
   BooleanProperty => BooleanP,
   DoubleProperty => DoubleP,
   StringProperty => StringP}
-import scalafx.scene.shape.{Shape, Rectangle, MoveTo, LineTo, ArcTo, Path}
+import scalafx.scene.shape.{Shape, Rectangle, MoveTo, LineTo, ArcTo, Path, PathElement}
 import scalafx.scene.SubScene
 import scalafx.scene.text.{Text, TextAlignment, TextFlow, Font}
 import scalafx.scene.paint.Color._
 import scalafx.scene.layout.Pane
 
-import sketch.controlFlowGraph.{ControlFlowGraph}
+import sketch.flowChart.{FlowChart}
 
 class SVGFx(img: SubScene){ 
   val test = List(
@@ -44,7 +44,7 @@ class SVGFx(img: SubScene){
       y = ypos
     }
   }
-  def decoRect(rc: Rectangle, i: Int): Unit = {
+  def makeBox(rc: Rectangle, i: Int): Unit = {
     val id_s = rc.id.value
     val xpos = rc.x.value 
     val ypos = rc.y.value 
@@ -122,7 +122,7 @@ class SVGFx(img: SubScene){
         }
         img.content.update(img.content.indexWhere(_.id.value == id_s), p)
       }
-    }
+    }                                                                                                                                                          
   }
   def makeLabel(id: String, s: String, xpos: Double, ypos: Double, i: Int): Unit = {
     val tx = new Text(xpos, ypos, s) {
@@ -137,7 +137,7 @@ class SVGFx(img: SubScene){
     val rc = makeRect(id, minX - w / 2 -5, ypos - h, w + 10, 2 * h)
     img.content += rc
     img.content += tx
-    decoRect(rc, i)
+    makeBox(rc, i)
   }
   def setColor(q: String): Unit = {
     for (e <- img.content) e match {
@@ -149,22 +149,35 @@ class SVGFx(img: SubScene){
       case _ => {}
     }
   }
-  def lookup(q: String): Option[Shape] = {
+  def lookup(q: String): Shape = {
     img.content.find( (e :javafx.scene.Node) => e match {
       case sh:javafx.scene.shape.Shape => sh.id.value == q
       case _ => false
     }) match {
-      case Some(shape) => Some(shape.asInstanceOf[javafx.scene.shape.Shape])
-      case None => None
+      case Some(shape) => shape.asInstanceOf[javafx.scene.shape.Shape]
+      case None => sys.error("Lookup failed on " + q)
     }
-  }
-  def connect(cfg: ControlFlowGraph): Path = {
-    for ((q, p, i) <- cfg.data) yield {
-      val q_ = lookup(q) match {
-      }
-    }
-    //for (e <- img.content) e match {}
+  }//sliding
+  def connect(fc: FlowChart): Path = new Path{
+    id = "connecting_edge"
+    stroke = Black
+    for ((q, p, i) <- fc.data) {
+      val qsh = lookup(q); val psh = lookup(p)
+      val qminX = qsh.boundsInLocal.value.minX
+      val qminY = qsh.boundsInLocal.value.minY
+      val qw = qsh.boundsInLocal.value.width
+      val qh = qsh.boundsInLocal.value.height
 
+      val pminX = psh.boundsInLocal.value.minX
+      val pminY = psh.boundsInLocal.value.minY
+      val pw = psh.boundsInLocal.value.width
+      val ph = psh.boundsInLocal.value.height
+
+      val span = 40
+      elements ++ List(
+        new MoveTo{x = qminX + qw/2; y = qminY},
+        new LineTo{absolute = false; x = 0; y = qh + 2 * span})
+    }
   }
 }
 

@@ -19,7 +19,7 @@ import scalafx.scene.shape.{Shape, Rectangle}
 import sketch.fxio3d.{FxIO3D}
 import sketch.animation.Clock
 import sketch.windowMaker.WindowMaker
-import sketch.controlFlowGraph.{ControlFlowGraph}
+import sketch.flowChart.{FlowChart}
 import sketch.component.{Position, Direction}
 import sketch.svgFx.{SVGFx}
 
@@ -99,14 +99,14 @@ val j_tr =
 }
 
 object Main extends JFXApp {
-  val cfg = List(("A", "B", 1), ("B", "C", 2), ("C", "D", 0), ("D", "A", 1))
-  val qs = new ControlFlowGraph("A", cfg) 
+  val fc = List(("A", "B", 1), ("B", "C", 2), ("C", "D", 0), ("D", "A", 1))
+  val qs = new FlowChart("A", fc) 
   val img = new SubScene(300, 700){
   }
   val svg = new SVGFx(img)
   //img.content = svg.test
   val lbl = List("製品到着","1St.開 & 2St.閉","姿勢制御","1St.閉 & 2St.開 ")
-  for ((s, i) <- lbl.zipWithIndex) cfg(i) match {
+  for ((s, i) <- lbl.zipWithIndex) fc(i) match {
     case (q, p, lbl) => svg.makeLabel(q, s, 150, (i+1) * 120, lbl)
   }
   def draw(cnv: Canvas,  shape: String, trans: String): Unit = {

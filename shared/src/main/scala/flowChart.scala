@@ -1,5 +1,5 @@
-package sketch.controlFlowGraph
-class ControlFlowGraph(val init: String, val data: List[(String, String, Int)]) {
+package sketch.flowChart
+class FlowChart(val init: String, val data: List[(String, String, Int)]) {
   var present = init
   var index = 0
   val g = Map(data.map{case (q, p, lbl) => (q -> (p, lbl))}: _*)
