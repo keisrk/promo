@@ -105,17 +105,16 @@ object Main extends JFXApp {
   }
   val svg = new SVGFx(img)
   val v = svg.arrange(List(
-    List(("A", "製品到着", 0),("B", "1St.開 & 2St.閉", 1),("C","姿勢制御", 2), ("D", "センサON", 3)),
-    List(("NA", "", 0),       ("Cf", "検査NG", 3), ("E", "非常停止", 4))
+    List(("0", "Start", 0), ("A", "製品到着", 0),("B", "1St.開 & 2St.閉", 1),("C","姿勢制御", 2), ("D", "センサON", 3)),
+    List(("NA", "", 0),     ("NA", "", 0),       ("E", "検査NG", 3),         ("F", "非常停止", 4))
   ), 200, 120)
-  val e = List(("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"), ("B", "Cf"), ("Cf", "E"))
-  val lbl = List("製品到着","1St.開 & 2St.閉","姿勢制御","1St.閉 & 2St.開")
+  val e = List(("0", "A"), ("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"), ("D_else", "E"), ("E", "C"), ("E_else", "F"))
   svg.draw(v, e)
 
   def draw(cnv: Canvas,  shape: String, trans: String): Unit = {
     val l = List("A", "B", "C", "D")
     val q = qs.st8//(x: Int) => l(x % l.length)
-    val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(0/*- cnv.width.toDouble / 2*/, -cnv.height.toDouble)
+    val ctx = cnv.graphicsContext2D; ctx.scale(1, -1); ctx.translate(0, -cnv.height.toDouble)
     val p = new FxIO3D(ctx)
     val cl = new Clock(100, q)
     val j_sh = p.load(shape)
@@ -123,7 +122,7 @@ object Main extends JFXApp {
     val es = p.mashup(j_sh, j_tr, cl.state(), 1d)
     p.draw(es, (0d, 0d, 0d))   
     val timer = AnimationTimer(t => {
-      ctx.clearRect(/*- cnv.width.toDouble / 2*/0, 0, cnv.width.toDouble, cnv.height.toDouble)
+      ctx.clearRect(0, 0, cnv.width.toDouble, cnv.height.toDouble)
       cl.incl(1d)
       val es = p.mashup(j_sh, j_tr, cl.state(), cl.inter())
       p.draw(es, (0d, 0d, 0d))

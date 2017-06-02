@@ -15,6 +15,7 @@ import scalafx.scene.layout.Pane
 import sketch.flowChart.{FlowChart}
 
 class SVGFx(img: SubScene){
+
   def draw(v: List[(String, String, Int, Double, Double)], e: List[(String, String)]): Unit = {
     val boxes = ListBuffer[Shape]()
     val edges = ListBuffer[PathElement]()
@@ -27,10 +28,20 @@ class SVGFx(img: SubScene){
       boxes += box(id, xpos -w/2, qmaxY -h, w, h, i); q
     }
     for (q <- qs) {
-      val ps = e.collect{case (l, r) if q.id.value == l => qs.find(p => p.id.value == r)}
-      for (pt <- ps) yield pt match {
-        case None => List[PathElement]()
-        case Some(p) => edges ++= connect(q, p)
+      for ((l, r) <- e) {
+        if (q.id.value == l) {
+          qs.find(p => p.id.value == r) match {
+            case None => {}
+            case Some(p) => edges ++= connect(q, p, false)
+          }
+        } else if (l.startsWith(q.id.value) && l.endsWith("_else")) {
+          qs.find(p => p.id.value == r) match {
+            case None => {}
+            case Some(p) => edges ++= connect(q, p, true)
+          }
+        } else {
+
+        }
       }
     }
 
@@ -51,25 +62,7 @@ class SVGFx(img: SubScene){
     }
   }
 
-  val test = List(
-    new Rectangle {
-      id = "redrect"
-      width = 100
-      height = 100
-      fill = Red
-      translateX = 97
-      translateY = 147
-    },
-    new Rectangle {
-      id = "bluerect"
-      width = 100
-      height = 100
-      fill = Blue
-      translateX = 217
-      translateY = 147
-    }
-  )
-  def makeRect(s: String, xpos: Double, ypos: Double, w: Double, h: Double): Rectangle = {
+  def rectangle(s: String, xpos: Double, ypos: Double, w: Double, h: Double): Rectangle = {
     new Rectangle {
       id = s
       width = w
@@ -79,101 +72,6 @@ class SVGFx(img: SubScene){
       x = xpos
       y = ypos
     }
-  }
-  def makeBox(rc: Rectangle, i: Int): Unit = {
-    val id_s = rc.id.value
-    val xpos = rc.x.value 
-    val ypos = rc.y.value 
-    val w = rc.width.value 
-    val h = rc.height.value
-    i match {
-      case 0 => {}
-      case 1 => {
-        rc.x.update(xpos -10)
-        rc.width.update(w +20)
-        rc.arcWidth.value = h/2; rc.arcHeight.value = h/2}
-      case 2 => {
-       val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
-          new MoveTo{x = xpos +w; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h})
-       val p = new Path{
-          stroke = Black 
-          elements = es
-        }
-        img.content += p
-        rc.x.update(xpos -10)
-        rc.width.update(w +20)
-      }
-      case 3 => {
-        val es = List(
-          new MoveTo{x = xpos - w/2; y = ypos + h/2},
-          new LineTo{absolute = false; x = w; y = -h},
-          new LineTo{absolute = false; x = w; y = h},
-          new LineTo{absolute = false; x = -w; y = h},
-          new LineTo{absolute = false; x = -w; y = -h}
-        )
-        val p = new Path{
-          id = id_s
-          stroke = Black 
-          fill = rc.fill.value
-          elements = es
-        }
-        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
-      }
-      case 4 => {
-         val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = -10; y = h/2},
-          new LineTo{absolute = false; x = 10; y = h/2},
-          new LineTo{absolute = false; x = w -10; y = 0},
-          new ArcTo{ absolute = false; x = 0; y = -h 
-          radiusX = h/2; radiusY = h/2; XAxisRotation = 180},
-          new LineTo{absolute = false; x = 10 -w; y = 0}
-        )
-        val p = new Path{
-          id = id_s
-          stroke = Black 
-          fill = rc.fill.value
-          elements = es
-        }
-        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
-      }
-      case 5 => {
-        val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
-          new LineTo{absolute = false; x = w; y = 0},
-          new LineTo{absolute = false; x = 0; y = -h},
-          new LineTo{absolute = false; x = -20; y = -10},
-          new LineTo{absolute = false; x = -w +40; y = 0},
-          new LineTo{absolute = false; x = -20; y = 10}
-        )
-        val p = new Path{
-          id = id_s
-          stroke = Black 
-          fill = rc.fill.value
-          elements = es
-        }
-        img.content.update(img.content.indexWhere(_.id.value == id_s), p)
-      }
-    }                                                                                                                                                          
-  }
-  def makeLabel(id: String, s: String, xpos: Double, ypos: Double, i: Int): Unit = {
-    val tx = new Text(xpos, ypos, s) {
-      font = Font("Courier New", 20)
-    }
-    val minX = tx.boundsInLocal.value.minX 
-    val minY = tx.boundsInLocal.value.minY 
-    val w = tx.boundsInLocal.value.width 
-    val h = tx.boundsInLocal.value.height 
-    tx.x = minX - w / 2
-    tx.y = minY + h
-    val rc = makeRect(id, minX - w / 2 -5, ypos - h, w + 10, 2 * h)
-    img.content += rc
-    img.content += tx
-    makeBox(rc, i)
   }
   def setColor(q: String): Unit = {
     for (e <- img.content) e match {
@@ -193,70 +91,83 @@ class SVGFx(img: SubScene){
     txt.x.update(xpos -txt.boundsInLocal.value.width / 2)
     txt
   }
-  def connect(qt: Text, pt: Text): List[PathElement] = {
+  def connect(qt: Text, pt: Text, offset: Boolean): List[PathElement] = {
     val spanX = 120
     val spanY = 40
-    val qminX = qt.boundsInLocal.value.minX
-    val qmaxY = qt.boundsInLocal.value.maxY
     val qw = qt.boundsInLocal.value.width
     val qh = qt.boundsInLocal.value.height
-    val qcx = qminX + qw/2
+    val qmaxY = qt.boundsInLocal.value.maxY +qh/2
+    val qcx = if (offset) {
+      qt.boundsInLocal.value.maxX + qw/2
+    } else {
+      qt.boundsInLocal.value.minX + qw/2
+    }
+    val qcy = if (offset) {
+      qmaxY -qh
+    } else {
+      qmaxY
+    }
 
-    val pminX = pt.boundsInLocal.value.minX
-    val pminY = pt.boundsInLocal.value.minY
     val pw = pt.boundsInLocal.value.width
     val ph = pt.boundsInLocal.value.height
+    val pminX = pt.boundsInLocal.value.minX
+    val pminY = pt.boundsInLocal.value.minY -ph/2
     val pcx = pminX + pw/2
 
     if (qcx == pcx) {
       if (qmaxY < pminY) {
         List(
-          new MoveTo{x = qcx; y = qmaxY},
-          new LineTo{absolute = false; x = 0; y = pminY - qmaxY})
+          new MoveTo{x = qcx; y = qcy},
+          new LineTo{absolute = false; x = 0; y = pminY -qcy/*qmaxY*/})
       } else {
         List(
-          new MoveTo{x = qcx; y = qmaxY},
+          new MoveTo{x = qcx; y = qcy},
           new LineTo{absolute = false; x = 0; y = spanY},
           new LineTo{absolute = false; x = -spanX; y = 0},
-          new LineTo{absolute = false; x = 0; y = pminY - qmaxY -spanY * 2},
+          new LineTo{absolute = false; x = 0; y = pminY -qcy /*qmaxY*/ -spanY * 2},
           new LineTo{absolute = false; x = spanX; y = 0},
-          new LineTo{absolute = false; x = 0; y = spanY})
+          new LineTo{absolute = false; x = 0; y = spanY},
+          new LineTo{absolute = false; x = -5; y = -10},
+          new LineTo{absolute = false; x = 5; y = 0})
       }
     } else {
       val diff = qcx - pcx
       if (qmaxY < pminY) {
         List(
-          new MoveTo{x = qcx; y = qmaxY},
-          new LineTo{absolute = false; x = 0; y = pminY - qmaxY},
+          new MoveTo{x = qcx; y = qcy},
+          new LineTo{absolute = false; x = 0; y = pminY -qcy -spanY/*qmaxY*/},
           new LineTo{absolute = false; x = -diff; y = 0},
-          new LineTo{absolute = false; x = 0; y = 40})
-      } else {
-        List(
-          new MoveTo{x = qcx; y = qmaxY},
-          new LineTo{absolute = false; x = 0; y = spanY},
-          new LineTo{absolute = false; x = -diff/2; y = 0},
-          new LineTo{absolute = false; x = 0; y = pminY - qmaxY -spanY * 2},
-          new LineTo{absolute = false; x = -diff/2; y = 0},
           new LineTo{absolute = false; x = 0; y = spanY})
+      } else {
+        val cspanY = if (offset) 0 else spanY
+        List(
+          new MoveTo{x = qcx; y = qcy},
+          new LineTo{absolute = false; x = 0; y = cspanY},
+          new LineTo{absolute = false; x = -diff/2; y = 0},
+          new LineTo{absolute = false; x = 0; y = pminY -qcy /*qmaxY*/ -(cspanY + spanY)},
+          new LineTo{absolute = false; x = -diff/2; y = 0},
+          new LineTo{absolute = false; x = 0; y = spanY},
+          new LineTo{absolute = false; x = -5; y = -10},
+          new LineTo{absolute = false; x = 5; y = 0})
       }
     }
   }
   def box(id_s: String, xpos: Double, ypos: Double, w: Double, h: Double, i: Int): Shape = {
     i match {
-      case 0 => makeRect(id_s, xpos, ypos, w, h)
+      case 0 => rectangle(id_s, xpos, ypos -h/2, w, 2*h)
       case 1 => {
-        val rc = makeRect(id_s, xpos -10, ypos, w +20, h)
+        val rc = rectangle(id_s, xpos -10, ypos -h/2, w +20, 2*h)
         rc.arcWidth.update(h/2); rc.arcHeight.update(h/2); rc}
       case 2 => {
         val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
-          new MoveTo{x = xpos +w; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
-          new MoveTo{x = xpos -10; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
+          new MoveTo{x = xpos; y = ypos -h/2},
+          new LineTo{absolute = false; x = 0; y = 2*h},
+          new MoveTo{x = xpos +w; y = ypos -h/2},
+          new LineTo{absolute = false; x = 0; y = 2*h},
+          new MoveTo{x = xpos -10; y = ypos -h/2},
+          new LineTo{absolute = false; x = 0; y = 2*h},
           new LineTo{absolute = false; x = w +20; y = 0},
-          new LineTo{absolute = false; x = 0; y = -h},
+          new LineTo{absolute = false; x = 0; y = -2*h},
           new LineTo{absolute = false; x = -(w +20); y = 0}
         )
         new Path{
@@ -268,7 +179,7 @@ class SVGFx(img: SubScene){
       }
       case 3 => {
         val es = List(
-          new MoveTo{x = xpos - w/2; y = ypos + h/2},
+          new MoveTo{x = xpos - w/2; y = ypos +h/2},
           new LineTo{absolute = false; x = w; y = -h},
           new LineTo{absolute = false; x = w; y = h},
           new LineTo{absolute = false; x = -w; y = h},
@@ -283,12 +194,12 @@ class SVGFx(img: SubScene){
       }
       case 4 => {
         val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = -10; y = h/2},
-          new LineTo{absolute = false; x = 10; y = h/2},
+          new MoveTo{x = xpos; y = ypos -h/2},
+          new LineTo{absolute = false; x = -10; y = h},
+          new LineTo{absolute = false; x = 10; y = h},
           new LineTo{absolute = false; x = w -10; y = 0},
-          new ArcTo{ absolute = false; x = 0; y = -h
-            radiusX = h/2; radiusY = h/2; XAxisRotation = 180},
+          new ArcTo{ absolute = false; x = 0; y = -2*h
+            radiusX = h; radiusY = h; XAxisRotation = 180},
           new LineTo{absolute = false; x = 10 -w; y = 0}
         )
         new Path{
@@ -300,10 +211,10 @@ class SVGFx(img: SubScene){
       }
       case 5 => {
         val es = List(
-          new MoveTo{x = xpos; y = ypos},
-          new LineTo{absolute = false; x = 0; y = h},
+          new MoveTo{x = xpos; y = ypos -h/2},
+          new LineTo{absolute = false; x = 0; y = 2*h},
           new LineTo{absolute = false; x = w; y = 0},
-          new LineTo{absolute = false; x = 0; y = -h},
+          new LineTo{absolute = false; x = 0; y = -2*h},
           new LineTo{absolute = false; x = -20; y = -10},
           new LineTo{absolute = false; x = -w +40; y = 0},
           new LineTo{absolute = false; x = -20; y = 10}
@@ -315,7 +226,6 @@ class SVGFx(img: SubScene){
           elements = es
         }
       }
-    }                                                                                                                                                          
+    }
   }
 }
-
