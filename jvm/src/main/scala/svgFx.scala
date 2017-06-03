@@ -75,8 +75,8 @@ class SVGFx(img: SubScene){
   }
   def setColor(q: String): Unit = {
     for (e <- img.content) e match {
-      case sh:javafx.scene.shape.Rectangle if e.id.value == q => sh.fill = Turquoise
-      case sh:javafx.scene.shape.Path if e.id.value == q => sh.fill = Turquoise
+      case sh:javafx.scene.shape.Rectangle if e.id.value contains q => sh.fill = Turquoise
+      case sh:javafx.scene.shape.Path if e.id.value contains q => sh.fill = Turquoise
       case sh:javafx.scene.shape.Path if e.id.value == "connecting_edge" => {}
       case sh:javafx.scene.shape.Rectangle => sh.fill = White 
       case sh:javafx.scene.shape.Path => sh.fill = White 
