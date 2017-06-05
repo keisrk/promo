@@ -35,20 +35,22 @@ trait Prelude {
   def lineTo(x: Double, y: Double): Unit     
   def beginPath(): Unit
   def strokePath(): Unit
+  def fill(flag: Boolean): Unit
   def draw(es: List[Edge], v: View): Unit = {
-    beginPath()
     for (e <- es) {
       e match {
         case Nil => {}
         case p::tl => {
+    beginPath()
           ((tp: (Double, Double))=> moveTo(tp._1, tp._2))(dump(p, v))
           for (q <- tl) {
             ((tp: (Double, Double))=> lineTo(tp._1, tp._2))(dump(q, v))
           }
+          fill(true)
+    strokePath()
         }
       }
     }
-    strokePath()
   }
 }
 
@@ -92,14 +94,27 @@ abstract class P3D extends Prelude {
       case (x, y, z) => (x + y * 0.5, z + y * 0.5)
   }}
   def toEdge(s: Shape):List[Edge] = s match {
-    case Vec(id, o, (x, y, z)) => List(
+    case Vec(id, o, (x, y, z)) => List(/*
       List(o, add(o, (x, 0d, 0d)), add(o, (x, y, 0d)), add(o, (0d, y, 0d)), o,
         add(o, (0d, 0d, z)), add(o, (x, 0d, z)), add(o, (x, y, z)), add(o, (0d, y, z)), add(o, (0d, 0d, z))),
       List(add(o, (x, 0d, 0d)), add(o, (x, 0d, z))),
       List(add(o, (0d, y, 0d)), add(o, (0d, y, z))),
-      List(add(o, (x, y, 0d)), add(o, (x, y, z)))
-    )
-    case Poly(id, s, d) => d match { case None => List(s); case Some(z) => List(s) ++ List(s.map{o => add(o, (0d, 0d, z))}) ++ s.map{o => List(o, add(o, (0d, 0d, z)))}}
+      List(add(o, (x, y, 0d)), add(o, (x, y, z)))*/
+     List(add(o, (0d, 0d, z)), add(o, (x, 0d, z)), add(o, (x, y, z)), add(o, (0d, y, z)), add(o, (0d, 0d, z))),
+     List(o, add(o, (x, 0d, 0d)), add(o, (x, 0d, z)), add(o, (0d, 0d, z)), o),
+     List(add(o, (x, 0d, 0d)), add(o, (x, y, 0d)), add(o, (x, y, z)), add(o, (x, 0d, z)), add(o, (x, 0d, 0d)))
+     )
+    case Poly(id, s, d) => d match { 
+      case None => List(s) 
+      case Some(z) => {
+        s.sliding(2).toList.map{case a::b::x => a::add(a, (0d, 0d, z))::add(b, (0d, 0d, z))::b::a::x}
+        /*
+        val head = s.head
+        val last = s.last
+        List(
+          s ++ List(last, add(last, (0d, 0d, z))) ++ s.map{o => add(o, (0d, 0d, z))}.reverse ++ List(add(head, (0d, 0d, z)), head))
+        */}//List(s) ++ List(s.map{o => add(o, (0d, 0d, z))}) ++ s.map{o => List(o, add(o, (0d, 0d, z)))}
+    }
     case Compose(id, l) => l.foldLeft(List[Edge]()){(acc, e) => acc ++ toEdge(e)}
     case _ => List(List())
   }

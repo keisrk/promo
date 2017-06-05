@@ -7,10 +7,12 @@ import sketch.matrix.{DblMat}
 import sketch.wireframemodel.{Prelude, P3D}
 
 abstract class JSOut(ctx: Ctx2D) extends P3D with Prelude{
+  ctx.fillStyle = "lightskyblue"
   def moveTo(x: Double, y: Double): Unit = ctx.moveTo(x, y)
   def lineTo(x: Double, y: Double): Unit = ctx.lineTo(x, y)
   def beginPath(): Unit = ctx.beginPath()
   def strokePath(): Unit = ctx.stroke()
+  def fill(flag: Boolean): Unit = if (flag) {ctx.fill()} else {}
 }
 class JSIO3D(ctx: Ctx2D) extends JSOut(ctx: Ctx2D) {
  def v_load(id: Option[String], s: Dynamic): Shape = if (s.isInstanceOf[Array[Array[Double]]]){

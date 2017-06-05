@@ -143,7 +143,7 @@ class SVG(img: svg.SVG) {
         path.createSVGPathSegMovetoAbs(qcx, qcy),
         path.createSVGPathSegLinetoRel(0, spanY),
         path.createSVGPathSegLinetoRel(-spanX, 0),
-        path.createSVGPathSegLinetoRel(0, pminY -qcy),
+        path.createSVGPathSegLinetoRel(0, pminY -qcy -spanY *2),
         path.createSVGPathSegLinetoRel(spanX, 0),
         path.createSVGPathSegLinetoRel(0, spanY),
         path.createSVGPathSegLinetoRel(-5, -10),
