@@ -95,7 +95,7 @@ abstract class P3D extends Prelude {
     case (rz, dx, dz) => p_reduce(p, DblMat.view(rz, dx, dz)) match {
       case (x, y, z) => (x + y * 0.5, z + y * 0.5)
   }}
-  def sort(el: List[Edge]): List[Edge] = el.sortWith(_.max() < _.max())
+  //def sort(el: List[Edge]): List[Edge] = el.sortWith(_.max() < _.max())
   def toEdge(s: Shape):List[Edge] = s match {
     case Vec(id, o, (x, y, z)) => List(/*
       List(o, add(o, (x, 0d, 0d)), add(o, (x, y, 0d)), add(o, (0d, y, 0d)), o,
