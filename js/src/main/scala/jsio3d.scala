@@ -6,7 +6,7 @@ import scala.scalajs.js.Dictionary
 import sketch.matrix.{DblMat}
 import sketch.wireframemodel.{Prelude, P3D}
 
-abstract class JSOut(ctx: Ctx2D) extends P3D with Prelude{
+abstrac class JSOut(ctx: Ctx2D) extends P3D with Prelude{
   ctx.fillStyle = "lightskyblue"
   def moveTo(x: Double, y: Double): Unit = ctx.moveTo(x, y)
   def lineTo(x: Double, y: Double): Unit = ctx.lineTo(x, y)

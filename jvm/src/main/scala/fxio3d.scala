@@ -7,7 +7,7 @@ import scalafx.scene.canvas.{GraphicsContext => Ctx2D}
 import scala.util.parsing.json.JSON
 
 abstract class FxOut(ctx: Ctx2D) extends P3D with Prelude{
-  ctx.fillStyle = scalafx.scene.paint.Color.White
+  //ctx.fillStyle = scalafx.scene.paint.Color.White
   def moveTo(x: Double, y: Double): Unit = ctx.moveTo(x, y)
   def lineTo(x: Double, y: Double): Unit = ctx.lineTo(x, y)
   def beginPath(): Unit = ctx.beginPath()

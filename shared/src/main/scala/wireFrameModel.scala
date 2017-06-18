@@ -27,6 +27,7 @@ trait Prelude {
     case Poly(id, s, d) => Poly(id, s.map( o => add(o, p)), d)
     case Compose(id, l) => Compose(id, l.map( t => offset(p, t)))
   }
+  def sort(el: List[Edge]): List[Edge]
   def toEdge(s: Shape): List[Edge]
   def reduce(el: List[Edge], m: DblMat.Mat): List[Edge]
   def toMatrix(trans: List[Trans], i: Double): DblMat.Mat 
@@ -59,6 +60,7 @@ abstract class P2D extends Prelude {
   type Point = (Double, Double)
   def dump(x: Point, v: View): (Double, Double) = x
   def load(s: String) = Compose(None, List())
+  def sort(el: List[Edge]): List[Edge] = el
   def toEdge(s: Shape): List[Edge] = s match {
     case Vec(id, o, (x, y)) => List(List(o, add(o, (x, 0d)), add(o, (x, y)), add(o, (0d, y)), o))
     case Poly(id, s, d) => d match {
@@ -93,6 +95,7 @@ abstract class P3D extends Prelude {
     case (rz, dx, dz) => p_reduce(p, DblMat.view(rz, dx, dz)) match {
       case (x, y, z) => (x + y * 0.5, z + y * 0.5)
   }}
+  def sort(el: List[Edge]): List[Edge] = el.sortWith(_.max() < _.max())
   def toEdge(s: Shape):List[Edge] = s match {
     case Vec(id, o, (x, y, z)) => List(/*
       List(o, add(o, (x, 0d, 0d)), add(o, (x, y, 0d)), add(o, (0d, y, 0d)), o,
@@ -109,7 +112,7 @@ abstract class P3D extends Prelude {
       case Some(z) => {
         s.sliding(2).toList.map{case a::b::x => a::add(a, (0d, 0d, z))::add(b, (0d, 0d, z))::b::a::x}
         /*
-        val head = s.head
+  val head = s.head
         val last = s.last
         List(
           s ++ List(last, add(last, (0d, 0d, z))) ++ s.map{o => add(o, (0d, 0d, z))}.reverse ++ List(add(head, (0d, 0d, z)), head))
